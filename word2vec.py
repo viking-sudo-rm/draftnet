@@ -118,5 +118,3 @@ if trained_embeddings.shape[1] == 2:
         plt.annotate(label, xy=(x, y), xytext=(5, 2),
             textcoords='offset points', ha='right', va='bottom')
     plt.savefig("word2vec.png")
-Contact GitHub API Training Shop Blog About
-© 2017 GitHub, Inc. Terms Privacy Security Status Help
