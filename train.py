@@ -1,5 +1,6 @@
 import pickle, random
 import tensorflow as tf
+import numpy as np
 
 N = 113
 
@@ -10,41 +11,54 @@ def getOneHot(pick):
 
 def getData(filename):
 	raw = pickle.load(open(filename, "rb"))
-	X = [flatten(map(getOneHot, game["picks_bans"][:-1])) + [game["radiant_win"]] for game in raw]
-	Y = [getOneHot(game["picks_bans"][-1]) for game in raw]
-	return X, Y
+	X = [(flatten(map(getOneHot, game["picks_bans"][:-1])) + [game["radiant_win"]], getOneHot(game["picks_bans"][-1])) for game in raw if len(game["picks_bans"]) == 20]
+	return X
 
 
 print "reading training data.."
-X, Y = getData("data-100000/train-100000.data")
+trials = getData("data-100000/train-100000.data")
 
-x = tf.placeholder(tf.float32, shape=[1, len(X[0])])
+x = tf.placeholder(tf.float32, shape=[1, len(trials[0][0])])
 # need to shape [batch_size, 1] for nn.nce_loss
-y = tf.placeholder(tf.float32, shape=[1, N])
+y_ = tf.placeholder(tf.float32, shape=[1, N])
 
 W = tf.Variable(
-    tf.random_uniform([len(X[0]), N],-1.0, 1.0))
+    tf.random_uniform([len(trials[0][0]), N],-1.0, 1.0))
 b = tf.Variable(tf.zeros([1, N]))
 
-cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits = tf.matmul(x, W) + b, labels = y)
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits = tf.matmul(x, W) + b, labels = y_)
+y = tf.nn.softmax(tf.matmul(x, W) + b)
+
 train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
-sess = tf.InteractiveSession()
-tf.global_variables_initializer().run()
+init = tf.initialize_all_variables()
+with tf.Session() as sess:
+	print "starting training.."
+	sess.run(init)
+	for step in range(100000):
+	  batch_xs, batch_ys = zip(*random.sample(trials, 1))
+	  sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+	  # if step % 10 == 0:
+	  # 	print "Loss at ", step, loss_val # Report the loss
 
-trials = zip(X, Y)
-print range(1000) == None
-for step in range(1000):
-  batch_xs, batch_ys = zip(*random.sample(trials, 1))
-  _, loss_val = sess.run(train_step, feed_dict={x: batch_xs, y: batch_ys})
-  if step % 10 == 0:
-  	print "Loss at ", step, loss_val # Report the loss
+	print "reading test data.."
+	tests = getData("data-100000/test-100000.data")
 
-print "reading test data.."
-X_, Y_ = getData("data-100000/test-100000.data")
+	correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
+	accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print sess.run(accuracy, feed_dict={x: X_, y: Y_})
+	sum = 0
+	for testx, testy in tests:
 
+		values = sess.run(y, feed_dict={x: [testx], y_: [testy]})
+		predicted = np.argmax(values, 1)
+		actual = np.argmax(testy, 0)
 
+		if actual == predicted[0]: sum += 1
+
+		print predicted, actual, values[0][actual]
+
+	print sum, "/", len(tests)
+
+	# X, Y = zip(*tests)
+	# print sess.run(correct_prediction, feed_dict={x: X, y_: Y})
