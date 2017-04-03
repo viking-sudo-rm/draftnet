@@ -11,8 +11,7 @@ def get(url):
 
 matches = []
 
-i = 0
-while i < N:
+for i in range(0, N, 100):
 	res = get("https://api.opendota.com/api/explorer?sql=select%20match_id,picks_bans,radiant_win%20from%20matches%20where%20game_mode=2%20and%20picks_bans%20is%20not%20null%20order%20by%20match_id%20desc%20limit%20100%20offset%20" + str(i))
 	
 	if "error" in res.keys():
@@ -21,8 +20,7 @@ while i < N:
 		continue
 
 	matches += res["rows"]
-	i += 100
-	print "got", i, "/", N, "matches"
+	print "got", i + 100, "/", N, "matches"
 
 print "checking downloaded game data.."
 print "# with drafts:", sum(map(lambda x: 0 if x["picks_bans"] == None else 1, matches))
