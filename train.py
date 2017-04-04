@@ -9,9 +9,10 @@ flatten = lambda l: [item for sublist in l for item in sublist]
 def getOneHot(pick):
 	return [1 if i == pick["hero_id"] - 1 else 0 for i in range(N)]
 
-def getData(filename):
+def getData(filename, winOnly = True):
 	raw = pickle.load(open(filename, "rb"))
-	X = [(flatten(map(getOneHot, game["picks_bans"][:-1])) + [game["radiant_win"]], getOneHot(game["picks_bans"][-1])) for game in raw if len(game["picks_bans"]) == 20]
+	won = lambda game: (game["picks_bans"][-1]["team"] == 0 and game["radiant_win"]) or (game["picks_bans"][-1]["team"] == 1 and not game["radiant_win"])
+	X = [(flatten(map(getOneHot, game["picks_bans"][:-1])) + [game["radiant_win"]], getOneHot(game["picks_bans"][-1])) for game in raw if len(game["picks_bans"]) == 20 and (!winOnly or won(game))]
 	return X
 
 
@@ -31,7 +32,7 @@ y = tf.nn.softmax(tf.matmul(x, W) + b)
 
 train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
-init = tf.initialize_all_variables()
+init = tf.global_variables_initializer()
 with tf.Session() as sess:
 	print "starting training.."
 	sess.run(init)
