@@ -16,7 +16,7 @@ def getData(filename):
 
 
 print "reading training data.."
-trials = getData("data-100000/train-100000.data")
+trials = getData("data-41705/train-40705.data")
 
 x = tf.placeholder(tf.float32, shape=[1, len(trials[0][0])])
 # need to shape [batch_size, 1] for nn.nce_loss
@@ -42,7 +42,7 @@ with tf.Session() as sess:
 	  # 	print "Loss at ", step, loss_val # Report the loss
 
 	print "reading test data.."
-	tests = getData("data-100000/test-100000.data")
+	tests = getData("data-41705/test-1000.data")
 
 	correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
 	accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
