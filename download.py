@@ -1,9 +1,6 @@
 import requests, pickle, time, random
 
 N = 100000
-FILENAME = "matches-" + str(N) + ".data"
-TEST_NAME = "test-" + str(N) + ".data"
-TRAIN_NAME = "train-" + str(N) + ".data"
 WAIT_TIME = 60
 
 def get(url):
@@ -26,8 +23,9 @@ print "checking downloaded game data.."
 print "# with drafts:", sum(map(lambda x: 0 if x["picks_bans"] == None else 1, matches))
 print "# total:", len(matches)
 
-print "saving to", FILENAME + ".."
-pickle.dump(matches, open(FILENAME, "wb"))
+print "saving match data.."
+filename = "matches-" + len(matches) + ".data"
+pickle.dump(matches, open(filename, "wb"))
 
 print "sampling test and train datasets.."
 random.shuffle(matches)
@@ -35,6 +33,9 @@ test = matches[:N / 10]
 train = matches[N / 10:]
 
 print "saving test dataset.."
-pickle.dump(test, open(TEST_NAME, "wb"))
+filename = "test-" + len(test) + ".data"
+pickle.dump(test, open(filename, "wb"))
+
 print "saving train dataset.."
-pickle.dump(train, open(TRAIN_NAME, "wb"))
+filename = "train-" + len(train) + ".data"
+pickle.dump(train, open(filename, "wb"))
