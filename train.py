@@ -53,6 +53,7 @@ with tf.Session() as sess:
 
 	 #TODO: train batches
 	 #TODO: more layers
+	 #TODO: try backwards architecture
 
 	print "reading test data.."
 	tests = getData("data-41705/test-1000.data")
