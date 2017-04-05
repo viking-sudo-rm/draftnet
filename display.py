@@ -1,0 +1,57 @@
+import pickle
+
+PICK_BAN_ORDER = [(False, 1), #where the picker is on team 0
+				  (False, 0),
+				  (False, 1),
+				  (False, 0),
+				  (True, 1),
+				  (True, 0),
+				  (True, 0),
+				  (True, 1),
+				  (False, 0),
+				  (False, 1),
+				  (False, 0),
+				  (False, 1),
+				  (True, 0),
+				  (True, 1),
+				  (True, 0),
+				  (True, 1),
+				  (False, 0),
+				  (False, 1),
+				  (True, 1)]
+
+print "downloading hero data.."
+heroes = pickle.load(open("heroes.data","rb"))
+
+def vec2hero(vector):
+	for i in range(len(heroes)):
+		if vector[i] == 1:
+			return int2hero(i)
+	return None
+
+def int2hero(i):
+	return heroes[i]
+
+def getName(hero):
+	if hero == None:
+		return "Error"
+	return hero["localized_name"]
+
+def heroes2str(l):
+	return ", ".join([getName(h) for h in l])
+
+class Team:
+
+	def __init__(self, name):
+		self.name = name
+		self.picks = []
+		self.bans = []
+
+	def __str__(self):
+		return self.name + ":\n\tpicks: " + heroes2str(self.picks) + "\n\tbans: " + heroes2str(self.bans)
+
+	def pick(self, hero):
+		self.picks.append(hero)
+
+	def ban(self, hero):
+		self.bans.append(hero)
