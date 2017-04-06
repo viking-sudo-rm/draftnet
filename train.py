@@ -112,8 +112,6 @@ with tf.Session() as sess:
 
         values = sess.run(y, feed_dict={x: [testx], y_: [testy]})   # its a numpy.ndarray
 
-        # print predicted, actual, values[0][actual]
-
         h = []
         for i in range(0, len(testx) - H, H):
             h.append(vec2hero(testx[i:i + H])),
