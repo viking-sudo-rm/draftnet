@@ -58,6 +58,7 @@ def heroes2str(l):
 
 
 class Team:
+
     def __init__(self, name):
         self.name = name
         self.picks = []
@@ -71,3 +72,6 @@ class Team:
 
     def ban(self, hero):
         self.bans.append(hero)
+
+    def isValid(self, hero):
+		return hero not in self.bans + self.picks
