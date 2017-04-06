@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d27cb973-793c-4885-af99-328665e35b13" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/display.py" afterPath="$PROJECT_DIR$/display.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/download.py" afterPath="$PROJECT_DIR$/download.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/train.py" afterPath="$PROJECT_DIR$/train.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/create_vectors.py" afterPath="$PROJECT_DIR$/create_vectors.py" />
     </list>
     <ignored path="draft-net1.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -43,7 +39,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="train.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="train.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/train.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
@@ -55,11 +51,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="create_vectors.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="create_vectors.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/create_vectors.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="260">
-              <caret line="30" column="23" selection-start-line="30" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
+            <state relative-caret-position="458">
+              <caret line="55" column="24" selection-start-line="55" selection-start-column="24" selection-end-line="55" selection-end-column="24" />
               <folding />
             </state>
           </provider>
@@ -105,9 +101,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/download.py" />
-        <option value="$PROJECT_DIR$/create_vectors.py" />
         <option value="$PROJECT_DIR$/train.py" />
         <option value="$PROJECT_DIR$/display.py" />
+        <option value="$PROJECT_DIR$/create_vectors.py" />
       </list>
     </option>
   </component>
@@ -568,14 +564,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/create_vectors.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="30" column="23" selection-start-line="30" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/display.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="22">
@@ -593,6 +581,14 @@
           <folding>
             <element signature="e#0#37#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/create_vectors.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="458">
+          <caret line="55" column="24" selection-start-line="55" selection-start-column="24" selection-end-line="55" selection-end-column="24" />
+          <folding />
         </state>
       </provider>
     </entry>

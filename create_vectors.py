@@ -54,5 +54,3 @@ for t in HeroDictionary.keys():
 
 
 print(HeroDictionary[1])
-
-pickle.dump(HeroDictionary, open('HeroDict', 'wb'))
