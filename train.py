@@ -5,9 +5,11 @@ import numpy as np
 from display import *
 
 
-N = 113
-M = N*10
+N = 113 # number of heroes
+M = N * 10
 L = 5 + N
+
+H = N + 4 # length of a hero vector with features
 
 BATCH_SIZE = 10
 LEARNING_RATE = 0.5
@@ -113,8 +115,8 @@ with tf.Session() as sess:
         # print predicted, actual, values[0][actual]
 
         h = []
-        for i in range(0, len(testx) - N, N):
-            h.append(vec2hero(testx[i:i + N])),
+        for i in range(0, len(testx) - H, H):
+            h.append(vec2hero(testx[i:i + H])),
 
         teams = [Team("picking team"), Team("other team")]
         for i in range(len(PICK_BAN_ORDER)):
