@@ -16,7 +16,7 @@ M = N * 10
 # Pusher
 # Nuker
 
-ROLES = ["Carry", "Support", "Jungler"] # TODO maybe compute some sort of role probability?
+ROLES = [] # TODO maybe compute some sort of role probability?
 H = N + 4 + len(ROLES) # length of a hero vector with features
 
 BATCH_SIZE = 10
@@ -29,7 +29,7 @@ flatten = lambda l: [item for sublist in l for item in sublist]
 def getOneHot(pick):
     return [1 if i == getShiftedID(pick["hero_id"]) else 0 for i in range(N)]
 
-def getFeatures(pick):
+def getSupervisedFeatures(pick):
     features = []
     hero = heroes[getShiftedID(pick["hero_id"])]
     if hero['attack_type'] == 'Melee':
@@ -42,10 +42,10 @@ def getFeatures(pick):
         features += [0, 1, 0]
     else:
         features += [0, 0, 1]
-    features += [1 if ROLES[t] in hero['roles'] else 0 for t in range(len(ROLES))]
+    features += [1 if role in hero['roles'] else 0 for t in ROLES]
     return features
 
-getHeroVector = lambda pick, addFeatures: getOneHot(pick) + (getFeatures(pick) if addFeatures else [])
+getHeroVector = lambda pick, addFeatures: getOneHot(pick) + (getSupervisedFeatures(pick) if addFeatures else [])
 
 def getData(filename, winOnly=True, xFeatures=True, yFeatures=False):
     # raw is a list with all the games. each game is a dict.
@@ -65,6 +65,9 @@ trials = getData("data-41705/train-40705.data")
 x = tf.placeholder(tf.float32, shape=[None, len(trials[0][0])])
 y_ = tf.placeholder(tf.float32, shape=[None, len(trials[0][1])])
 
+# want to dim-reduce each one-hot vector with the same matrix W_0 before starting
+# W_0 = 
+# TODO use tf.concat to build the full embedding in the second layer
 
 # we create the set of initial weights and biases.
 # the dimensions are so that (x*W_1 + b_1 )*W_2+b_2 has the same shape as y_
