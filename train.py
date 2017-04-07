@@ -7,17 +7,17 @@ from display import *
 
 N = 113 # number of heroes
 M = N * 10
-L = 5 + N
 
-H = N + 4 # length of a hero vector with features
+#ROLES = ['Support', 'Jungler', 'Escape', 'Carry', 'Durable', 'Nuker', 'Pusher', 'Disabler', 'Initiator']
+#to disable/enable a feature, comment it out here
+ROLES = ["Support", "Carry", "Jungler"]
+H = N + 4 + len(ROLES) # length of a hero vector with features
 
 BATCH_SIZE = 10
 LEARNING_RATE = 0.5
 
 # the following three functions are to construct our vectors from the file.
 flatten = lambda l: [item for sublist in l for item in sublist]
-
-ROLES = ['Support', 'Jungler', 'Escape', 'Carry', 'Durable', 'Nuker', 'Pusher', 'Disabler', 'Initiator']
 
 # pick is a dict with keys: hero, team, order
 def getOneHot(pick):
@@ -36,7 +36,7 @@ def getFeatures(pick):
         features += [0, 1, 0]
     else:
         features += [0, 0, 1]
-    # features += [1 if ROLES[t] in hero['roles'] else 0 for t in range(9)]
+    features += [1 if ROLES[t] in hero['roles'] else 0 for t in range(len(ROLES))]
     return features
 
 getHeroVector = lambda pick, addFeatures: getOneHot(pick) + (getFeatures(pick) if addFeatures else [])

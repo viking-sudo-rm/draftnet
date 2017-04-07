@@ -19,7 +19,7 @@ PICK_BAN_ORDER = [	(False, 1),  # where the picker is on team 0
 					(True, 1),
 					(False, 0),
 					(False, 1),
-					(True, 1)	]
+					(True, 1)	] # something is fucked up with the order
 
 print("downloading hero data..")
 heroes = requests.get("https://api.opendota.com/api/heroes").json()
