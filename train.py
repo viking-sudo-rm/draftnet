@@ -10,7 +10,13 @@ M = N * 10
 
 #ROLES = ['Support', 'Jungler', 'Escape', 'Carry', 'Durable', 'Nuker', 'Pusher', 'Disabler', 'Initiator']
 #to disable/enable a feature, comment it out here
-ROLES = ["Support", "Carry", "Jungler"]
+
+# Adding the following features seems to narrow predictions too much:
+# Disabler
+# Pusher
+# Nuker
+
+ROLES = ["Carry", "Support", "Jungler"] # TODO maybe compute some sort of role probability?
 H = N + 4 + len(ROLES) # length of a hero vector with features
 
 BATCH_SIZE = 10
@@ -47,8 +53,8 @@ def getData(filename, winOnly=True, xFeatures=True, yFeatures=False):
     # won is a bool. true only when the team with the last pick won.
     won = lambda game: (game["picks_bans"][-1]["team"] == 0 and game["radiant_win"]) or (game["picks_bans"][-1]["team"] == 1 and not game["radiant_win"])
 
-    X = [(flatten(map(lambda x: getHeroVector(x, xFeatures), game["picks_bans"][:-1])) + [game["picks_bans"][0]["team"]] + [] if winOnly else [
-        won(game)], getHeroVector(game["picks_bans"][-1], yFeatures), game["match_id"]) for game in raw if
+    X = [(flatten(map(lambda x: getHeroVector(x, xFeatures), game["picks_bans"][:-1])) + ([] if winOnly else [
+        won(game)]) + [game["picks_bans"][0]["team"]], getHeroVector(game["picks_bans"][-1], yFeatures), game["match_id"]) for game in raw if
          len(game["picks_bans"]) == 20 and (not winOnly or won(game))]
     return X
 

@@ -1,25 +1,27 @@
 from __future__ import print_function
 import requests
 
-PICK_BAN_ORDER = [	(False, 1),  # where the picker is on team 0
-					(False, 0),
-					(False, 1),
-					(False, 0),
-					(True, 1),
-					(True, 0),
-					(True, 0),
-					(True, 1),
-					(False, 0),
+PICK_BAN_ORDER = [	(False, 0),  # where the picker is on team 0
 					(False, 1),
 					(False, 0),
 					(False, 1),
 					(True, 0),
 					(True, 1),
-					(True, 0),
 					(True, 1),
+					(True, 0),
+					(False, 1),
 					(False, 0),
 					(False, 1),
+					(False, 0),
+					(True, 1),
+					(True, 0),
+					(True, 1),
+					(True, 0),
+					(False, 1),
+					(False, 0),
 					(True, 1)	] # something is fucked up with the order
+
+()
 
 print("downloading hero data..")
 heroes = requests.get("https://api.opendota.com/api/heroes").json()
