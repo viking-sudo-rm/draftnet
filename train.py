@@ -16,7 +16,7 @@ M = 50
 # Pusher
 # Nuker
 BATCH_SIZE = 50
-LEARNING_RATE = 0.01
+LEARNING_RATE = 0.01 #should use something like 0.0001 for multi-layered network
 
 argparser = argparse.ArgumentParser(description="Set train and test files.")
 
@@ -92,8 +92,15 @@ x = [tf.placeholder(tf.float32, shape=[None, N]) for i in range(19)]
 # the dimensions are so that (x*W_1 + b_1 )*W_2+b_2 has the same shape as y_
 W_1 = tf.Variable(tf.random_uniform([len(trials[0][0][0]), M], -1.0, 1.0), name='Weights1')
 b_1 = tf.Variable(tf.zeros([1, M]), name='Bias1')
+
 W_2 = tf.Variable(tf.random_uniform([M*19, len(trials[0][1])], -1.0, 1.0), name='Weights2')
 b_2 = tf.Variable(tf.zeros([1, len(trials[0][1])]), name='Bias2')
+
+#If we add a third layer of length M
+# W_2 = tf.Variable(tf.random_uniform([M*19, M], -1.0, 1.0), name='Weights2')
+# b_2 = tf.Variable(tf.zeros([1, M]), name='Bias2')
+# W_3 = tf.Variable(tf.random_uniform([M, len(trials[0][1])], -1.0, 1.0), name='Weights3')
+# b_3 = tf.Variable(tf.zeros([1, len(trials[0][1])]), name='Bias3')
 
 def lower_dim(z, matrix, bias):
     out = [None]*19
@@ -102,19 +109,28 @@ def lower_dim(z, matrix, bias):
     w = tf.concat([out[i] for i in range(19)], 1)
     return w[0]
 
-# we create our model.
-def model(W_1, b_1, W_2, b_2):
+# we create a model without an M hidden layer.
+def model2(W_1, b_1, W_2, b_2):
     x_prime = [tf.add(tf.matmul(x[i],W_1), b_1) for i in range(len(x))]
     h_1 = tf.sigmoid(tf.concat(1, x_prime), name="hidden1") #axis=1; order of parameters different across versions
     
-    # TODO add another layer in here?
-
     y0 = tf.add(tf.matmul(h_1, W_2), b_2)
     y = tf.nn.softmax(y0, name='Output2-normalized')
     return y0, y
 
+# we create a model with an M hidden layer.
+def model3(W_1, b_1, W_2, b_2, W_3, b_3):
+    x_prime = [tf.add(tf.matmul(x[i],W_1), b_1) for i in range(len(x))]
+    h_1 = tf.sigmoid(tf.concat(1, x_prime), name="hidden1") #axis=1; order of parameters different across versions
+    
+    h_2 = tf.sigmoid(tf.add(tf.matmul(h_1, W_2), b_2))
+    # TODO add another layer in here?
+    y0 = tf.add(tf.matmul(h_2, W_3), b_3)
+    y = tf.nn.softmax(y0, name='Output3-normalized')
+    return y0, y
 
-y0, y = model(W_1, b_1, W_2, b_2)
+
+y0, y = model2(W_1, b_1, W_2, b_2)
 
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y0, labels=y_, name='cross_entropy')
 train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(cross_entropy)
