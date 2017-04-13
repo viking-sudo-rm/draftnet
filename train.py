@@ -20,8 +20,8 @@ LEARNING_RATE = 0.01
 
 argparser = argparse.ArgumentParser(description="Set train and test files.")
 
-argparser.add_argument('--train', help='path to train file', default='data-41705/train-40705.data')
-argparser.add_argument('--test', help='path to test file', default='data-41705/test-1000.data')
+argparser.add_argument('--train', help='path to train file', default='matches-100000.data')
+argparser.add_argument('--test', help='path to test file', default='matches-9900 ..data')
 
 args = argparser.parse_args()
 
@@ -105,7 +105,7 @@ def lower_dim(z, matrix, bias):
 # we create our model.
 def model(W_1, b_1, W_2, b_2):
     x_prime = [tf.add(tf.matmul(x[i],W_1), b_1) for i in range(len(x))]
-    h_1 = tf.sigmoid(tf.concat(1, x_prime), name="hidden1") #axis=1; order of parameters different across versions
+    h_1 = tf.sigmoid(tf.concat(x_prime, axis=1), name="hidden1") #axis=1; order of parameters different across versions
     
     # TODO add another layer in here?
 
@@ -159,7 +159,6 @@ with tf.Session() as sess:
         h = []
         for v in testx:
             h.append(vec2hero(v))
-
         teams = [Team("picking team"), Team("other team")]
         for i in range(len(PICK_BAN_ORDER)):
             team = teams[PICK_BAN_ORDER[i][1]]
@@ -172,10 +171,28 @@ with tf.Session() as sess:
         print(teams[0])
         print(teams[1])
 
+
+
+        NotAllowed = {h[i]['id'] for i in range(19)}
+        #for i in range(19):
+        #    values[0][NotAllowed[i]] = 0
+        #tf.nn.softmax(values)
+
+
         # print(values)
         # predicted = {values[0][i] : i for i in range(len(values[0]))}
         actual = np.argmax(testy, 0)
-        predicted = np.argmax(values, 1)[0]
+
+        while True:
+            predicted = np.argmax(values, 1)[0]
+            if predicted in NotAllowed:
+                values[0][predicted] = 0
+            else:
+                break
+
+        neighborhood = [i for i in range(len(values[0])) if abs(values[0][i]-values[0][predicted])/ values[0][predicted] < .2 and values[0][i] not in NotAllowed]
+        print(len(neighborhood))
+        # predicted = np.argmax(values, 1)[0]
 
         # for i in sorted(predicted):
         #   heroId = int(predicted[i])
@@ -183,9 +200,10 @@ with tf.Session() as sess:
         #   if teams[0].isValid(hero) and teams[1].isValid(hero):
         #       break
 
-        if actual == predicted: s += 1
+        if actual in neighborhood: s += 1
 
         print("predicted:", getName(int2hero(predicted)))
+        print("predicted neighborhood:", list(map(getName, list(map(int2hero, neighborhood)))))
         print("actual:", getName(int2hero(actual)))
         print("-----------------------------")
 
