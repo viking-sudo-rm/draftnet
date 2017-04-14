@@ -71,6 +71,8 @@ def heroVectors(game, Features):
     return vector
 
 # TODO change getData to return correctly formatted batch data
+# TODO JSON is not an efficient representation. should use some backwards compatible pickle like:
+# pickle.dump(p, open("p.data", "wb"), protocol=2)
 def getData(filename, winOnly=True, xFeatures=False, yFeatures=False):
     # raw is a list with all the games. each game is a dict.
     raw = json.load(open(filename, "rb"))
@@ -216,4 +218,4 @@ with tf.Session() as sess:
     print(s, "/", len(tests))
 
     print("saving embedding weights as CSV..")
-    np.savetxt("W.csv", sess.run(W_1), delimiter=",")
+    np.savetxt("results/W.csv", sess.run(W_1), delimiter=",")
