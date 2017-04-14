@@ -1,9 +1,10 @@
 from __future__ import print_function
-import pickle, random
+import json, random
 import tensorflow as tf
 import numpy as np
 from display import *
 import argparse
+from sys import version_info
 
 N = 113 # number of heroes
 M = 50
@@ -20,24 +21,29 @@ LEARNING_RATE = 0.01 #should use something like 0.0001 for multi-layered network
 
 argparser = argparse.ArgumentParser(description="Set train and test files.")
 
-argparser.add_argument('--train', help='path to train file', default='matches-100000.data')
-argparser.add_argument('--test', help='path to test file', default='matches-9900 ..data')
+argparser.add_argument('--train', help='path to train file', default='data/train-8100.json')
+argparser.add_argument('--test', help='path to test file', default='data/test-900.json')
 
 args = argparser.parse_args()
-
-TRAIN_FILE = args.train
-TEST_FILE = args.test
 
 # the following three functions are to construct our vectors from the file.
 flatten = lambda l: [item for sublist in l for item in sublist]
 
 ROLES = ['Support', 'Jungler', 'Escape', 'Carry', 'Durable', 'Nuker', 'Pusher', 'Disabler', 'Initiator']
 
+# need these functions to accomodate different versions of tensorflow
+def getConcatNew(l, axis):
+    return tf.concat(l, axis=axis)
+
+def getConcatOld(l, axis):
+    return tf.concat(axis, l)
+
+def getConcat(l, axis):
+    return getConcatOld(l, axis) if 2 in version_info else getConcatNew(l, axis)
 
 # pick is a dict with keys: hero, team, order
 def getOneHot(pick):
     return [1 if i == getShiftedID(pick["hero_id"]) else 0 for i in range(N)]
-
 
 def getFeatures(pick):
     features = []
@@ -65,10 +71,9 @@ def heroVectors(game, Features):
     return vector
 
 # TODO change getData to return correctly formatted batch data
-# should also probably save as JSON or something instead of pickle
 def getData(filename, winOnly=True, xFeatures=False, yFeatures=False):
     # raw is a list with all the games. each game is a dict.
-    raw = pickle.load(open(filename, "rb"))
+    raw = json.load(open(filename, "rb"))
     # won is a bool. true only when the team with the last pick won.
     won = lambda game: (game["picks_bans"][-1]["team"] == 0 and game["radiant_win"]) or (
     game["picks_bans"][-1]["team"] == 1 and not game["radiant_win"])
@@ -76,17 +81,18 @@ def getData(filename, winOnly=True, xFeatures=False, yFeatures=False):
          for game in raw if won(game) and len(game["picks_bans"]) == 20]
     return X
 
+print("reading training data from", args.train + "..")
+trials = getData(args.train)
 
-print("reading training data..")
-trials = getData(TRAIN_FILE)
+print("setting up network..")
 
 # we create placeholders where our data will go. None allows us to feed in variable-length inputs.
 # x is now the placeholder for a single hero vector
 # x = tf.placeholder(tf.float32, shape=[None, len(trials[0][0][0])])
-y_ = tf.placeholder(tf.float32, shape=[None, len(trials[0][1])])
 #x = tf.placeholder(tf.float32, shape=[None, len(trials[0][0]), len(trials[0][0][0])])
 
 x = [tf.placeholder(tf.float32, shape=[None, N]) for i in range(19)]
+y_ = tf.placeholder(tf.float32, shape=[None, len(trials[0][1])])
 
 # we create the set of initial weights and biases.
 # the dimensions are so that (x*W_1 + b_1 )*W_2+b_2 has the same shape as y_
@@ -112,7 +118,7 @@ def lower_dim(z, matrix, bias):
 # we create a model without an M hidden layer.
 def model2(W_1, b_1, W_2, b_2):
     x_prime = [tf.add(tf.matmul(x[i],W_1), b_1) for i in range(len(x))]
-    h_1 = tf.sigmoid(tf.concat(x_prime, axis=1), name="hidden1") #axis=1; order of parameters different across versions
+    h_1 = tf.sigmoid(getConcat(x_prime, 1), name="hidden1") #axis=1; order of parameters different across versions
     
     y0 = tf.add(tf.matmul(h_1, W_2), b_2)
     y = tf.nn.softmax(y0, name='Output2-normalized')
@@ -121,7 +127,7 @@ def model2(W_1, b_1, W_2, b_2):
 # we create a model with an M hidden layer.
 def model3(W_1, b_1, W_2, b_2, W_3, b_3):
     x_prime = [tf.add(tf.matmul(x[i],W_1), b_1) for i in range(len(x))]
-    h_1 = tf.sigmoid(tf.concat(1, x_prime), name="hidden1") #axis=1; order of parameters different across versions
+    h_1 = tf.sigmoid(getConcat(x_prime, 1), name="hidden1") #axis=1; order of parameters different across versions
     
     h_2 = tf.sigmoid(tf.add(tf.matmul(h_1, W_2), b_2))
     # TODO add another layer in here?
@@ -149,7 +155,7 @@ with tf.Session() as sess:
     # since we have len(trials) many test points, and we are feeding it
     # BATCH_SIZE many points at the time we will update our weights and biases a total of len(trials)/BATCH_SIZE
     print("starting training..")
-    training_bool = True
+
     for step in range(len(trials) // BATCH_SIZE):
         batch_xs, batch_ys, batch_ids = zip(*random.sample(trials, BATCH_SIZE))
         extracted_batch_xs = list(zip(*batch_xs))
@@ -160,8 +166,8 @@ with tf.Session() as sess:
         # TODO: more layers
         # TODO: try backwards architecture
 
-    print("reading test data..")
-    tests = getData(TEST_FILE)
+    print("reading test data from", args.test + "..")
+    tests = getData(args.test)
 
     # checks if the prediction is correct.
     correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))  # its a boolean
@@ -187,16 +193,7 @@ with tf.Session() as sess:
         print(teams[0])
         print(teams[1])
 
-
-
         NotAllowed = {h[i]['id'] for i in range(19)}
-        #for i in range(19):
-        #    values[0][NotAllowed[i]] = 0
-        #tf.nn.softmax(values)
-
-
-        # print(values)
-        # predicted = {values[0][i] : i for i in range(len(values[0]))}
         actual = np.argmax(testy, 0)
 
         while True:
@@ -208,14 +205,6 @@ with tf.Session() as sess:
 
         neighborhood = [i for i in range(len(values[0])) if abs(values[0][i]-values[0][predicted])/ values[0][predicted] < .2 and values[0][i] not in NotAllowed]
         print(len(neighborhood))
-        # predicted = np.argmax(values, 1)[0]
-
-        # for i in sorted(predicted):
-        #   heroId = int(predicted[i])
-        #   hero = int2hero(heroId)
-        #   if teams[0].isValid(hero) and teams[1].isValid(hero):
-        #       break
-
         if actual in neighborhood: s += 1
 
         print("predicted:", getName(int2hero(predicted)))
@@ -225,3 +214,6 @@ with tf.Session() as sess:
 
 
     print(s, "/", len(tests))
+
+    print("saving embedding weights as CSV..")
+    np.savetxt("W.csv", sess.run(W_1), delimiter=",")
