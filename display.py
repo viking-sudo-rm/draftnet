@@ -45,7 +45,6 @@ for i in range(len(heroes)):
 
 roles = list(set(roles))
 
-
 def vec2hero(vector):
 	for i in range(len(heroes)):
 		if vector[i] == 1:
