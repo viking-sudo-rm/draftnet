@@ -24,6 +24,4 @@ python train.py --train data/train-17900.json --test data/test-2000.json
 
 ## Hero embeddings
 
-In addition to predicting hero picks, our neural network also produces embeddings of each hero in DotA. Intuitively, an embedding is a vector representation of a hero that captures all the important features that that hero has. Since the network stores these embeddings as vectors, we can use them to visualize the relationships between heroes in 2D space. In this plot of hero embeddings, notice how Alchemist and Doom, two strength heroes in DotA who can both farm very quickly, fall very close to each other. Similarly, the greedy support heroes Enchantress, Io, and Jakiro all fall on the same line because they have a lot in common.
-
-Every time you run `train.py`, the resulting weights will be exported to a file in the results folder. You can use `tsne.py` to produce a plot of these hero vectors in 2-space.
+In addition to predicting hero picks, our neural network also produces embeddings of each hero in DotA. Intuitively, an embedding is a vector representation of a hero that captures all the important features that that hero has. Since the network stores these embeddings as vectors, we can use them to visualize the relationships between heroes. Every time you run `train.py`, the resulting weights will be exported to a file in the results folder. You can use `tsne.py` to produce a plot of these hero vectors in 2D space.
