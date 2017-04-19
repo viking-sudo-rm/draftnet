@@ -5,9 +5,9 @@ A neural net approach to Dota 2 drafting
 
 [Dota 2](http://blog.dota2.com/?l=english) is a very popular video game played competitively as an eSport.
 An important part of every Dota 2 game is the draft: the phase during which each team of five players picks what 
-characters they want to play with.
+characters (heroes) they want to play with.
 
-In Dota, each hero has a unique set of abilities. The unique interaction of a hero’s abilities with those of its 
+This may sound simple, but drafting well is deceptively complicated. In Dota, each hero has a unique set of abilities. The unique interaction of a hero’s abilities with those of its 
 teammates might allow for an awesome combination play. Similarly, another ability might completely mitigate the 
 destructive potential of the enemy team. The art of reactively picking a cohesive lineup that counteracts your 
 opponent is called drafting, and it is one of the most important parts of any Dota game.
