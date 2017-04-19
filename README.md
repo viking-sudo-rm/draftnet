@@ -19,7 +19,7 @@ are read from the [OpenDota](https://www.opendota.com/) API, and then used to tr
 Our Python implementation of Draftnet requires the [tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed tensorflow, you can run our feed-forward network by running:
 
 ~~~~
-python train.py
+python train.py --train train-17900.json --test test-2000.json
 ~~~~
 
 ## Hero embeddings
