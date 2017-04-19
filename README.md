@@ -16,9 +16,7 @@ are read from the [OpenDota](https://www.opendota.com/) API, and then used to tr
 
 ## How to run
 
-Our Python implementation of Draftnet requires the [tensorflow](https://www.tensorflow.org/) machine learning library.
-
-After you have installed tensorflow, you can run the feed-forward network using: 
+Our Python implementation of Draftnet requires the [tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed tensorflow, you can run our feed-forward network by running:
 
 ~~~~
 python train.py
