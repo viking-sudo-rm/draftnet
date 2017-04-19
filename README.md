@@ -4,7 +4,7 @@ A neural net approach to Dota 2 drafting
 ## What draftnet does
 
 [Dota 2](http://blog.dota2.com/?l=english) is a very popular video game played competitively as an eSport.
-One important part of every Dota 2 game is the draft: the phase during which each team of five players picks what 
+An important part of every Dota 2 game is the draft: the phase during which each team of five players picks what 
 characters they want to play with.
 
 In Dota, each hero has a unique set of abilities. The unique interaction of a hero’s abilities with those of its 
