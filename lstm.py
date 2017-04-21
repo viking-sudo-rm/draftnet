@@ -3,7 +3,13 @@ from __future__ import print_function
 from tensorflow.contrib.rnn import GRUCell, DropoutWrapper, MultiRNNCell
 from train import *
 
-print(tf.__version__)
+print("tensorflow version", tf.__version__)
+
+BATCH_SIZE = 1
+
+LSTM_SIZE = 25
+NUM_BATCHES = 10000
+EPOCHS = 100
 
 isPick = lambda pick: 1 if pick["is_pick"] else 0
 isRadiant = lambda pick: pick["team"]
@@ -30,7 +36,7 @@ def getBatchTensor(games):
 
 
 # create LSTM constructor
-lstm = tf.contrib.rnn.LSTMCell(M, state_is_tuple=False)
+lstm = tf.contrib.rnn.BasicLSTMCell(LSTM_SIZE, state_is_tuple=True)
 
 # cells = MultiRNNCell([lstm]*19)
 
@@ -46,59 +52,95 @@ def tensormult(T, M):
     i, j, k = T.get_shape()
     k0, l = M.get_shape()
     assert k == k0
+
     tensor = []
     for a in range(i):
-        tensor.append(tf.matmul(T[a,:,:], M))
+        tensor.append(tf.matmul(T[a, :, :], M))
     return tf.stack(tensor)
 
 X_ = tf.sigmoid(tf.add(tensormult(X, W_1), b_1), name="Xprime")
 
-print(X.get_shape())
-print(tf.tensordot(X, W_1, axes=1).get_shape())
-print(X_.get_shape())
-
-# X_ = tf.placeholder(tf.float32, [None, 20, N+3], name="X'")
-Y = []
-
 W_2 = tf.Variable(tf.random_uniform([M, N], -1.0, 1.0), name='W2')
 b_2 = tf.Variable(tf.zeros([1, N]), name='b2')
 
-initial_state = state = tf.zeros([M, M])
+# initial_state = state = tf.zeros([M, M])
 
-# output, state = tf.nn.dynamic_rnn(cells, X_, dtype=tf.float32)
+# use dynamic_rnn to build the graph
+Y, final_state = tf.nn.dynamic_rnn(lstm, X_, time_major=False, dtype=tf.float32)
 
-# build graph and loss function expression
+predictedPicks = []
+
 loss = 0.0
-with tf.variable_scope("lstm") as scope:
+with tf.variable_scope("loss_layer") as scope:
     for i in range(19):
         if i > 0:
             scope.reuse_variables()
-
-        output, state = lstm(tf.transpose(X_[:, i, :]), tf.transpose(state))
-
-        y0 = tf.add(tf.matmul(output, W_2), b_2)
-        y = tf.nn.softmax(y0, name='Output2-normalized')
-
-        loss += tf.nn.softmax_cross_entropy_with_logits(logits=tf.transpose(y0), labels=X_[:, i + 1, :],
+        y0 = tf.add(tf.matmul(Y[:, i, :], W_2), b_2)
+        predictedPicks.append(tf.nn.softmax(y0, name='Output2-normalized'))
+        loss += tf.nn.softmax_cross_entropy_with_logits(logits=y0, labels=X[:, i + 1, :113],
                                                         name='cross_entropy' + str(i))
-        Y.append(y)
 
-final_state = state
+loss = tf.reduce_sum(loss)
+train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(loss)
 
 if __name__ == "__main__":
     with tf.Session() as session:
+
+        session.run(tf.initialize_all_variables())
+
         print("reading training data from", args.train + "..")
         train = [game for game in json.load(open(args.train, "r")) if len(game["picks_bans"]) == 20]
         print("read training data")
 
+        print("starting training..")
+        for i in range(EPOCHS):
+
+            epochLoss = 0.0
+
+            for _ in range(NUM_BATCHES // EPOCHS):
+                batch = random.sample(train, BATCH_SIZE)
+                batchTensor = getBatchTensor(batch)
+                epochLoss += session.run([loss, train_step], feed_dict={X: batchTensor})[0]
+
+            print("epoch", i, "loss:", epochLoss)
+
+        print("finished training")
+
+        print("reading training data from", args.test + "..")
+        test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
+        print("read training data")
+
+        sums = [0.0 for _ in range(19)]
+
+        allowed = [True for _ in range(N)]
+
+        for game in test:
+            actual = getGameMatrix(game)
+            predictions_distribution = session.run(predictedPicks, feed_dict={X: [actual]}) #length 19
+
+            print(game["match_id"])
+
+            predictions = []
+
+            for i in range(19):
+                while True:
+                    candidate = np.argmax(predictions_distribution[i])
+                    # print(predictions_distribution[i])
+                    if allowed[candidate]:
+                        predictions.append(candidate)
+                        break
+                    else:
+                        predictions_distribution[i] = 0
+                allowed[actual[i].index(1)] = False
+            print(predictions)
         # these things are now numbers, not graph nodes
-        num_state = initial_state.eval()
-        num_loss = 0.0
-
-        for i in range(len(train)):
-            batch = random.sample(train, BATCH_SIZE)
-            batchTensor = getBatchTensor(batch)
-
-            num_state, current_loss = session.run([final_state, loss],
-                                                  feed_dict={initial_state: num_state, X: batchTensor})
-            num_loss += current_loss
+        # num_state = initial_state.eval()
+        # num_loss = 0.0
+        #
+        # for i in range(len(train)):
+        #     batch = random.sample(train, BATCH_SIZE)
+        #     batchTensor = getBatchTensor(batch)
+        #
+        #     num_state, current_loss = session.run([final_state, loss],
+        #                                           feed_dict={initial_state: num_state, X: batchTensor})
+        #     num_loss += current_loss
