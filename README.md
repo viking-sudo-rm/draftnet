@@ -22,6 +22,14 @@ Our Python implementation of draftnet requires the [tensorflow](https://www.tens
 python train.py --train data/train-17900.json --test data/test-2000.json
 ~~~~
 
+You can also train the recurrent LSTM network by running:
+
+~~~~
+python lstm.py --train data/train-17900.json --test data/test-2000.json
+~~~~
+
+A trained LSTM network can be used to make intelligent predictions for arbitrary picks in a Dota 2 draft. However, at the moment, we have yet to implement an intuitive GUI interface for using a trained network to make predictions.
+
 ## Hero embeddings
 
 In addition to predicting hero picks, our neural network also produces embeddings of each hero in DotA. Intuitively, an embedding is a vector representation of a hero that captures all the important features that that hero has. Since the network stores these embeddings as vectors, we can use them to visualize the relationships between heroes. Every time you run `train.py`, the resulting weights will be exported to a file in the results folder. You can use `tsne.py` to produce a plot of these hero vectors in 2D space.
