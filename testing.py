@@ -1,12 +1,7 @@
-from __future__ import print_function
-
-from tensorflow.contrib.rnn import GRUCell, DropoutWrapper, MultiRNNCell
+import tensorflow as tf
 from train import *
 
-print("tensorflow version", tf.__version__)
-
-BATCH_SIZE = 100
-
+BATCH_SIZE = 1
 LSTM_SIZE = 25
 NUM_BATCHES = 10000
 EPOCHS = 100
@@ -85,36 +80,12 @@ train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(loss)
 
 if __name__ == "__main__":
     with tf.Session() as session:
-
-        session.run(tf.initialize_all_variables())
         saver = tf.train.Saver()
-        print("reading training data from", args.train + "..")
-        train = [game for game in json.load(open(args.train, "r")) if len(game["picks_bans"]) == 20]
-        print("read training data")
-
-        print("starting training..")
-        for i in range(EPOCHS):
-
-            epochLoss = 0.0
-
-            for _ in range(NUM_BATCHES // EPOCHS):
-                batch = random.sample(train, BATCH_SIZE)
-                batchTensor = getBatchTensor(batch)
-                epochLoss += session.run([loss, train_step], feed_dict={X: batchTensor})[0]
-
-            print("epoch", i, "loss:", epochLoss)
-
-        print("finished training")
-        # Save the variables to disk.
-        save_path = saver.save(session, "results/model-{}-{}-{}-{}.ckpt".format(BATCH_SIZE, NUM_BATCHES, LEARNING_RATE, LSTM_SIZE))
-        print("Model saved in file: %s " % save_path)
-
-        print("saving embedding weights as CSV..")
-        np.savetxt("results/W.csv", session.run(W_1), delimiter=",")
-        np.savetxt()
-        print("reading training data from", args.test + "..")
+        save_path = saver.restore(session, args.model)
+        print("Model loaded")
+        print("reading test data from", args.test + "..")
         test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
-        print("read training data")
+        print("read test data")
 
         sums = [0.0 for _ in range(19)]
 

@@ -16,6 +16,7 @@ argparser = argparse.ArgumentParser(description="Set train and test files.")
 
 argparser.add_argument('--train', help='path to train file', default='data/train-8100.json')
 argparser.add_argument('--test', help='path to test file', default='data/test-900.json')
+argparser.add_argument('--model', help='path to model file', default='results/model-100-10000-0.0001-25.ckpt')
 
 args = argparser.parse_args()
 
