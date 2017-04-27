@@ -1,7 +1,8 @@
 import tensorflow as tf
 import argparse
 import json
-
+from display import *
+from operator import add
 N = 113     # number of heroes
 M = 25
 LEARNING_RATE = 0.001
@@ -34,21 +35,43 @@ argparser = argparse.ArgumentParser(description="Set train and test files.")
 argparser.add_argument('--train', help='path to train file', default='data/train-8100.json')
 argparser.add_argument('--test', help='path to test file', default='data/test-900.json')
 args = argparser.parse_args()
-train = [game for game in json.load(open(args.train, "r")) if len(game["picks_bans"]) == 20]
+train = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
+
+
 
 # create function whose input is a game and output is a list of pairs (the data in the correct format)
 
+
+def getOneHot(pick):
+    return [1 if i == getShiftedID(pick["hero_id"]) else 0 for i in range(N)]
+
+
 def format(game):
-    data = []
-    our_picks = [0 for _ in range(N)]
-    our_bans = [0 for _ in range(N)]
-    their_picks = [0 for _ in range(N)]
-    their_bans = [0 for _ in range(N)]
-    for selection in game['picks_bans']:
-        
-
-
-
-
-
+    picks_bans = game['picks_bans']
+    first_pick = picks_bans[0]['team']      # gives a 0 or a 1
+    output = []
+    team0picks = [0]*N
+    team0bans = [0]*N
+    team1picks = [0]*N
+    team1bans = [0]*N
+    if first_pick == 0:
+        team0bans = getOneHot(picks_bans[0])
+    else:
+        team1bans = getOneHot(picks_bans[0])
+    for i in range(1, 20):
+        if picks_bans[i]['team'] == 0:
+            a = team0picks + team0bans + team1picks + team1bans
+            output.append((a, getOneHot(picks_bans[i])))
+            if picks_bans[i]['is_pick']:
+                team0picks = list(map(add, team0picks, getOneHot(picks_bans[i])))
+            else:
+                team0bans = list(map(add, team0bans, getOneHot(picks_bans[i])))
+        else:
+            a = team1picks + team1bans + team0picks + team0bans
+            output.append((a, getOneHot(picks_bans[i])))
+            if picks_bans[i]['is_pick']:
+                team1picks = list(map(add, team1picks, getOneHot(picks_bans[i])))
+            else:
+                team1bans = list(map(add, team1bans, getOneHot(picks_bans[i])))
+    return output
 
