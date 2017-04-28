@@ -2,17 +2,17 @@ from __future__ import print_function
 import tensorflow as tf
 import numpy as np
 import argparse, json, random
-from display import *
+from util import *
 
 N = 113     # number of heroes
 M = 25
-LEARNING_RATE = 0.01
+LEARNING_RATE = 0.1
 
 BATCH_SIZE = 100
 NUM_BATCHES = 1000000 # this number controls how long the program trains
 EPOCHS = 100
 
-# takes very close to 2^n iterations to reduce loss by one place with NUM_BATCHES = 1000000
+# takes very close to 2^n iterations to reduce loss by one place with NUM_BATCHES = 1000000 and LEARNING_RATE = 0.0001
 
 PICK_THRESHOLD = 0.95
 
@@ -44,6 +44,7 @@ train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(cross_ent
 argparser = argparse.ArgumentParser(description="Set train and test files.")
 argparser.add_argument('--train', help='path to train file', default='data/train-36740.json')
 argparser.add_argument('--test', help='path to test file', default='data/test-5000.json')
+argparser.add_argument('--model', help='path to model file', default='results/model-100-1000000-0.01-25.ckpt')
 args = argparser.parse_args()
 
 # create function whose input is a game and output is a list of pairs (the data in the correct format)
@@ -144,7 +145,7 @@ if __name__ == "__main__":
         print("reading testing data..")
         test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
 
-        print("starting testing..")
+        print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
         counts = [0.0] * 19
         neighborhood_sizes = [0.0] * 19
         for game in test:
