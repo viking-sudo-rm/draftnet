@@ -142,6 +142,23 @@ def getNotAllowed(context):
         if context[i] == 1: notAllowed[i % N] = True
     return notAllowed
 
+def testInSession(test, session):
+    print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
+    counts = [0.0] * 10
+    neighborhood_sizes = [0.0] * 10
+    for game in test:
+        x, y = zip(*format(game))
+        distributions = session.run(Y_, feed_dict={X: x, Y: y})
+        #TODO change this to be 
+        for i, distribution in enumerate(distributions):
+            notAllowed = getNotAllowed(x[i])
+            picks = getPicks(distribution, notAllowed)
+            neighborhood_sizes[i] += len(picks)
+            if np.argmax(y[i]) in picks:
+                counts[i] += 1
+    print("accuracies:", [c / len(test) for c in counts])
+    print("neighborhood sizes:", [n / len(test) for n in neighborhood_sizes])
+
 if __name__ == "__main__":
     with tf.Session() as session:
 
@@ -171,21 +188,5 @@ if __name__ == "__main__":
 
         print("reading testing data..")
         test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
-
-        print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
-        counts = [0.0] * 10
-        neighborhood_sizes = [0.0] * 10
-        for game in test:
-            x, y = zip(*format(game))
-            distributions = session.run(Y_, feed_dict={X: x, Y: y})
-            #TODO change this to be 
-            for i, distribution in enumerate(distributions):
-                notAllowed = getNotAllowed(x[i])
-                picks = getPicks(distribution, notAllowed)
-                neighborhood_sizes[i] += len(picks)
-                if np.argmax(y[i]) in picks:
-                    counts[i] += 1
-        print("accuracies:", [c / len(test) for c in counts])
-        print("neighborhood sizes:", [n / len(test) for n in neighborhood_sizes])
-
+        testInSession(test, session)
 

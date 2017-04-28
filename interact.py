@@ -8,6 +8,10 @@ if __name__ == "__main__":
 		saver = tf.train.Saver()
 		saver.restore(session, args.model)
 
+		# print("reading testing data..")
+		# test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
+		# testInSession(test, session)
+
 		while True: # keep going for a bunch of games
 
 			print("started new game")
