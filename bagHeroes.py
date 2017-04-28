@@ -13,7 +13,7 @@ EPOCHS = 100
 
 # takes very close to 2^n iterations to reduce loss by one place with NUM_BATCHES = 1000000 and LEARNING_RATE = 0.0001
 
-PICK_THRESHOLD = 0.99
+PICK_THRESHOLD = 0.97
 
 # create our nodes for the graph.
 
