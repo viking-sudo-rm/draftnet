@@ -4,21 +4,46 @@ from bagHeroes import *
 if __name__ == "__main__":
 	with tf.Session() as session:
 
-		# print("loading", args.model + "..")
-		# saver = tf.train.Saver()
-		# saver.restore(session, args.model)
+		print("loading", args.model + "..")
+		saver = tf.train.Saver()
+		saver.restore(session, args.model)
 
-		team1 = Team()
-		am = Hero.byName("antimage")
-		print("AM ID:", am.getID())
+		while True: # keep going for a bunch of games
 
-		team1.pick(am)
-		print("AM picked/banned:", am in team1)
+			print("started new game")
+			team1, team2 = Team(), Team()
 
-		# language specification for user commands:
+			while not team1.isFull() or not team2.isFull(): # keep going until draft is done 
+
+				action, arg = raw_input("> ").split(" ")
+				if action == "wepick":
+					team1.pick(Hero.byName(arg))
+				elif action == "weban":
+					team1.ban(Hero.byName(arg))
+				elif action == "theypick":
+					team2.pick(Hero.byName(arg))
+				elif action == "theyban":
+					team2.pick(Hero.byName(arg))
+				else:
+					break
+
+				notAllowed = team1.getNotAllowed() | team2.getNotAllowed()
+				# get context from teams then print network suggestions
+				# for picks and bans
+
+		# Example usage of classes:
+		# team1 = Team()
+		# am = Hero.byName("antimage")
+		# print("AM ID:", am.getID())
+		# team1.pick(am)
+		# print("AM picked/banned:", am in team1)
+
+		# Language specification for user commands:
 		# wepick [hero_name]
 		# weban [hero_name]
 		# theypick [hero_name]
 		# theyban [hero_name]
 		# after each command, the current neighborhood of likely picks is printed
 		# (sorted from highest to lowest probability)
+
+		# TODO should add null prediction with 0 for all heroes

@@ -6,7 +6,7 @@ from util import *
 
 N = 113     # number of heroes
 M = 25
-LEARNING_RATE = 0.1
+LEARNING_RATE = 0.01
 
 BATCH_SIZE = 100
 NUM_BATCHES = 1000000 # this number controls how long the program trains
@@ -44,7 +44,7 @@ train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(cross_ent
 argparser = argparse.ArgumentParser(description="Set train and test files.")
 argparser.add_argument('--train', help='path to train file', default='data/train-36740.json')
 argparser.add_argument('--test', help='path to test file', default='data/test-5000.json')
-argparser.add_argument('--model', help='path to model file', default='results/model-100-1000000-0.01-25.ckpt')
+argparser.add_argument('--model', help='path to model file', default='results/bag-100-1000000-0.01-25.ckpt')
 args = argparser.parse_args()
 
 # create function whose input is a game and output is a list of pairs (the data in the correct format)
@@ -61,8 +61,8 @@ def format(game):
     team0picks = [0]*N
     team0bans = [0]*N
     team1picks = [0]*N
-    team1bans = [0]*N
-    if first_pick == 0:
+    team1bans = [0]*N 
+    if first_pick == 0: #TODO generalize this part
         team0bans = getOneHot(picks_bans[0])
     else:
         team1bans = getOneHot(picks_bans[0])

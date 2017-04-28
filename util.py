@@ -109,5 +109,10 @@ class Team:
 	def isFull(self):
 		return len(self.picks) == Team.MAX_PICKS
 
+	def getNotAllowed(self):
+		return self.picks | self.bans
+
 	def __contains__(self, hero):
 		return hero in self.picks or hero in self.bans
+
+	# TODO define methods to get neural-net inputs from a Team instance
