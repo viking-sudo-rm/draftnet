@@ -6,7 +6,7 @@ from display import *
 
 N = 113     # number of heroes
 M = 25
-LEARNING_RATE = 0.001
+LEARNING_RATE = 0.01
 
 BATCH_SIZE = 100
 NUM_BATCHES = 1000000 # this number controls how long the program trains
@@ -14,7 +14,7 @@ EPOCHS = 100
 
 # takes very close to 2^n iterations to reduce loss by one place with NUM_BATCHES = 1000000
 
-PICK_THRESHOLD = 0.9
+PICK_THRESHOLD = 0.95
 
 # create our nodes for the graph.
 
