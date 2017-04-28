@@ -21,30 +21,6 @@ PICK_BAN_ORDER = [	(False, 0),  # where the picker is on team 0
 					(False, 0),
 					(True, 1)	] # something is fucked up with the order
 
-# roles =[]
-# for i in range(len(heroes)):
-# 	roles += heroes[i]['roles']
-
-# roles = list(set(roles))
-
-# def vec2hero(vector):
-# 	for i in range(len(heroes)):
-# 		if vector[i] == 1:
-# 			return int2hero(i)
-# 	return None
-
-
-# def int2hero(i):
-# 	return heroes[i]
-
-# def getHeroName(hero):
-# 	if hero == None:
-# 		return "Error"
-# 	return hero["localized_name"]
-
-# def getHeroNames(l):
-# 	return ", ".join([getHeroName(h) for h in l])
-
 class Hero:
 
 	def __init__(self, json):
@@ -89,6 +65,9 @@ for hero in Hero.heroes:
 Hero.heroes = [Hero(hero) for hero in Hero.heroes]
 Hero.heroByName = {Hero.getPlainName(hero.getName()) : hero for hero in Hero.heroes}
 
+def getVectorForSet(heroSet):
+	return [1 if hero in heroSet else 0 for hero in Hero.heroes]
+
 class Team:
 
 	MAX_PICKS = 5
@@ -110,7 +89,11 @@ class Team:
 		return len(self.picks) == Team.MAX_PICKS
 
 	def getNotAllowed(self):
-		return self.picks | self.bans
+		union = self.picks | self.bans
+		return [True if h in union else False for h in Hero.heroes]
+
+	def getContextVector(self):
+		return getVectorForSet(self.picks) + getVectorForSet(self.bans)
 
 	def __contains__(self, hero):
 		return hero in self.picks or hero in self.bans

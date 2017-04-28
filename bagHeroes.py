@@ -14,7 +14,7 @@ EPOCHS = 100
 
 # takes very close to 2^n iterations to reduce loss by one place with NUM_BATCHES = 1000000 and LEARNING_RATE = 0.0001
 
-PICK_THRESHOLD = 0.95
+PICK_THRESHOLD = 0.99
 
 # create our nodes for the graph.
 
@@ -108,10 +108,13 @@ def getPicks(distribution, notAllowed):
             picks.add(i)
     return picks
 
+def getNames(picks):
+    return [Hero.byID(pick).getName() for pick in picks]
+
 # collapse a context list x into a flag-set of non-allowable heroes
 def getNotAllowed(context):
     notAllowed = [False] * N
-    for i in range(len(context) - 1): #whenever we add more extra bits, need to change this number
+    for i in range(len(context) - (len(context) % N)): #whenever we add more extra bits, need to change this number
         if context[i] == 1: notAllowed[i % N] = True
     return notAllowed
 

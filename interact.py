@@ -27,9 +27,12 @@ if __name__ == "__main__":
 				else:
 					break
 
-				notAllowed = team1.getNotAllowed() | team2.getNotAllowed()
-				# get context from teams then print network suggestions
-				# for picks and bans
+				notAllowed = getNotAllowed(team1.getNotAllowed() + team2.getNotAllowed())
+				x = team1.getContextVector() + team2.getContextVector()
+				pick_distribution = session.run(Y_, feed_dict={X: [x + [1]]})[0]
+				ban_distribution = session.run(Y_, feed_dict={X: [x + [0]]})[0]
+				print("picks:", ", ".join(getNames(getPicks(pick_distribution, notAllowed))))
+				print("bans:", ", ".join(getNames(getPicks(ban_distribution, notAllowed))))
 
 		# Example usage of classes:
 		# team1 = Team()
