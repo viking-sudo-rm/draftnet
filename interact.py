@@ -34,7 +34,7 @@ if __name__ == "__main__":
 				elif action == "theypick":
 					team1.pick(Hero.byName(arg))
 				elif action == "theyban":
-					team1.pick(Hero.byName(arg))
+					team1.ban(Hero.byName(arg))
 				else:
 					break
 

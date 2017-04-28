@@ -4,7 +4,7 @@ import numpy as np
 import argparse, json, random
 from util import *
 
-M = 25
+M = 50
 LEARNING_RATE = 0.01
 
 BATCH_SIZE = 100
@@ -43,7 +43,7 @@ train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(cross_ent
 argparser = argparse.ArgumentParser(description="Set train and test files.")
 argparser.add_argument('--train', help='path to train file', default='data/train-36740.json')
 argparser.add_argument('--test', help='path to test file', default='data/test-5000.json')
-argparser.add_argument('--model', help='path to model file', default='results/bag-100-1000000-0.01-25.ckpt')
+argparser.add_argument('--model', help='path to model file', default='results/bag-100-1000000-0.01-50.ckpt')
 args = argparser.parse_args()
 
 # create function whose input is a game and output is a list of pairs (the data in the correct format)
