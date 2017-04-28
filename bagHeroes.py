@@ -4,7 +4,6 @@ import numpy as np
 import argparse, json, random
 from util import *
 
-N = 113     # number of heroes
 M = 25
 LEARNING_RATE = 0.01
 
@@ -54,40 +53,65 @@ flatten = lambda l: [item for sublist in l for item in sublist]
 def getOneHot(pick):
     return [1 if i == getShiftedID(pick["hero_id"]) else 0 for i in range(N)]
 
+# extract 10 winning picks from a game
+# TODO: should also have one that returns everything(sorted by radiant-dire) and predicts win
 def format(game):
     picks_bans = game['picks_bans']
-    first_pick = picks_bans[0]['team']      # gives a 0 or a 1
+    winning_team = 0 if game['radiant_win'] else 1
+    first_pick = picks_bans[0]['team'] # gives a 0 or a 1
     output = []
-    team0picks = [0]*N
-    team0bans = [0]*N
-    team1picks = [0]*N
-    team1bans = [0]*N 
-    if first_pick == 0: #TODO generalize this part
-        team0bans = getOneHot(picks_bans[0])
-    else:
-        team1bans = getOneHot(picks_bans[0])
-    for i in range(1, 20):
+
+    team0, team1 = Team(), Team() # team 0 is the winning/picking team
+
+    for i in range(20):
         hero_id = getShiftedID(picks_bans[i]['hero_id'])
         is_pick_bit = 1 if picks_bans[i]['is_pick'] else 0
-        if picks_bans[i]['team'] == 0:
-            a = team0picks + team0bans + team1picks + team1bans + [is_pick_bit]
+
+        if picks_bans[i]['team'] == winning_team:
+            a = team0.getContextVector() + team1.getContextVector() + [is_pick_bit]
             output.append((a, getOneHot(picks_bans[i])))
             if picks_bans[i]['is_pick']:
-                team0picks[hero_id] = 1 # this is way faster
-                # team0picks = list(map(add, team0picks, getOneHot(picks_bans[i])))
+                team0.pick(Hero.byID(hero_id))
             else:
-                team0bans[hero_id] = 1
-                # team0bans = list(map(add, team0bans, getOneHot(picks_bans[i])))
-        else:
-            a = team1picks + team1bans + team0picks + team0bans + [is_pick_bit]
-            output.append((a, getOneHot(picks_bans[i])))
+                team0.ban(Hero.byID(hero_id))
+        else: # don't append to output, but pick the hero
             if picks_bans[i]['is_pick']:
-                team1picks[hero_id] = 1
-                # team1picks = list(map(add, team1picks, getOneHot(picks_bans[i])))
+                team1.pick(Hero.byID(hero_id))
             else:
-                team1bans[hero_id] = 1
-                # team1bans = list(map(add, team1bans, getOneHot(picks_bans[i])))
+                team1.ban(Hero.byID(hero_id))
+
     return output
+
+    # team0picks = [0]*N
+    # team0bans = [0]*N
+    # team1picks = [0]*N
+    # team1bans = [0]*N 
+    # if first_pick == 0: #TODO generalize this part
+    #     team0bans = getOneHot(picks_bans[0])
+    # else:
+    #     team1bans = getOneHot(picks_bans[0])
+    # for i in range(1, 20):
+    #     hero_id = getShiftedID(picks_bans[i]['hero_id'])
+    #     is_pick_bit = 1 if picks_bans[i]['is_pick'] else 0
+    #     if picks_bans[i]['team'] == 0:
+    #         a = team0picks + team0bans + team1picks + team1bans + [is_pick_bit]
+    #         output.append((a, getOneHot(picks_bans[i])))
+    #         if picks_bans[i]['is_pick']:
+    #             team0picks[hero_id] = 1 # this is way faster
+    #             # team0picks = list(map(add, team0picks, getOneHot(picks_bans[i])))
+    #         else:
+    #             team0bans[hero_id] = 1
+    #             # team0bans = list(map(add, team0bans, getOneHot(picks_bans[i])))
+    #     else:
+    #         a = team1picks + team1bans + team0picks + team0bans + [is_pick_bit]
+    #         output.append((a, getOneHot(picks_bans[i])))
+    #         if picks_bans[i]['is_pick']:
+    #             team1picks[hero_id] = 1
+    #             # team1picks = list(map(add, team1picks, getOneHot(picks_bans[i])))
+    #         else:
+    #             team1bans[hero_id] = 1
+    #             # team1bans = list(map(add, team1bans, getOneHot(picks_bans[i])))
+    # return output
 
 # extracts a set of indexes of likely picks from a probability distribution over heroes
 # distribution is a numpy array representing a probability distribution
@@ -149,8 +173,8 @@ if __name__ == "__main__":
         test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
 
         print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
-        counts = [0.0] * 19
-        neighborhood_sizes = [0.0] * 19
+        counts = [0.0] * 10
+        neighborhood_sizes = [0.0] * 10
         for game in test:
             x, y = zip(*format(game))
             distributions = session.run(Y_, feed_dict={X: x, Y: y})

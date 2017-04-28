@@ -1,6 +1,8 @@
 from __future__ import print_function
 import requests
 
+N = 113     # number of heroes
+
 PICK_BAN_ORDER = [	(False, 0),  # where the picker is on team 0
 					(False, 1),
 					(False, 0),
@@ -74,16 +76,25 @@ class Team:
 
 	# should add references to Hero objects to these sets
 	def __init__(self):
+
+		# sets holding hero objects
 		self.picks = set()
 		self.bans = set()
+		# TODO change these sets to ordered lists
+
+		# vectors with v_i = 1 iff hero i is picked/banned
+		self.pickVector = [0] * N
+		self.banVector = [0] * N
 
 	def pick(self, hero):
 		if self.isFull(): return False
 		self.picks.add(hero)
+		self.pickVector[hero.getID()] = 1
 		return True
 
 	def ban(self, hero):
 		self.bans.add(hero)
+		self.banVector[hero.getID()] = 1
 
 	def isFull(self):
 		return len(self.picks) == Team.MAX_PICKS
@@ -93,9 +104,13 @@ class Team:
 		return [True if h in union else False for h in Hero.heroes]
 
 	def getContextVector(self):
-		return getVectorForSet(self.picks) + getVectorForSet(self.bans)
+		return self.pickVector + self.banVector
 
 	def __contains__(self, hero):
 		return hero in self.picks or hero in self.bans
+
+	@staticmethod
+	def getContextVectorFor(team0, team1, pickBit):
+		team0.getContextVector() + team1.getContextVector() + [pickBit]
 
 	# TODO define methods to get neural-net inputs from a Team instance
