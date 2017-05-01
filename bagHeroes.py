@@ -53,6 +53,7 @@ flatten = lambda l: [item for sublist in l for item in sublist]
 def getOneHot(pick):
     return [1 if i == getShiftedID(pick["hero_id"]) else 0 for i in range(N)]
 
+
 # extract 10 winning picks from a game
 # TODO: should also have one that returns everything(sorted by radiant-dire) and predicts win
 def format(game):
@@ -132,8 +133,10 @@ def getPicks(distribution, notAllowed):
             picks.add(i)
     return picks
 
+
 def getNames(picks):
     return [Hero.byID(pick).getName() for pick in picks]
+
 
 # collapse a context list x into a flag-set of non-allowable heroes
 def getNotAllowed(context):
@@ -141,6 +144,7 @@ def getNotAllowed(context):
     for i in range(len(context) - (len(context) % N)): #whenever we add more extra bits, need to change this number
         if context[i] == 1: notAllowed[i % N] = True
     return notAllowed
+
 
 def testInSession(test, session):
     print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
