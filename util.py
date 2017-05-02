@@ -38,6 +38,9 @@ class Hero:
     def getName(self):
         return self.json["localized_name"]
 
+    def getIconURL(self):
+    	return "icons/" + self.json["name"].replace("npc_dota_hero_", "") + ".png"
+
     @classmethod
     def byID(cls, id):
         return cls.heroes[id]

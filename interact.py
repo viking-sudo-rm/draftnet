@@ -2,6 +2,9 @@ from __future__ import print_function
 from bagHeroes import *
 
 if __name__ == "__main__":
+
+	args = parseDraftnetArgs()
+
     with tf.Session() as session:
 
         print("loading", args.model + "..")

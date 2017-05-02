@@ -38,21 +38,19 @@ Y_ = tf.sigmoid(y0)                                # probability distribution of
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y0, labels=Y, name='cross_entropy')
 train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(cross_entropy)
 
-# load games
-
-argparser = argparse.ArgumentParser(description="Set train and test files.")
-argparser.add_argument('--train', help='path to train file', default='data/train-36740.json')
-argparser.add_argument('--test', help='path to test file', default='data/test-5000.json')
-argparser.add_argument('--model', help='path to model file', default='results/bag-100-1000000-0.01-50.ckpt')
-args = argparser.parse_args()
-
-# create function whose input is a game and output is a list of pairs (the data in the correct format)
+# need this to avoid issues when importing something using argparser
+def parseDraftnetArgs():
+    argparser = argparse.ArgumentParser(description="Set train and test files.")
+    argparser.add_argument('--train', help='path to train file', default='data/train-36740.json')
+    argparser.add_argument('--test', help='path to test file', default='data/test-5000.json')
+    argparser.add_argument('--model', help='path to model file', default='results/bag-100-1000000-0.01-50.ckpt')
+    return argparser.parse_args()
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 
+# create function whose input is a game and output is a list of pairs (the data in the correct format)
 def getOneHot(pick):
     return [1 if i == getShiftedID(pick["hero_id"]) else 0 for i in range(N)]
-
 
 # extract 10 winning picks from a game
 # TODO: should also have one that returns everything(sorted by radiant-dire) and predicts win
@@ -164,6 +162,9 @@ def testInSession(test, session):
     print("neighborhood sizes:", [n / len(test) for n in neighborhood_sizes])
 
 if __name__ == "__main__":
+
+    args = parseDraftnetArgs()
+
     with tf.Session() as session:
 
         session.run(tf.global_variables_initializer())
