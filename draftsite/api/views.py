@@ -3,7 +3,7 @@ from __future__ import unicode_literals, print_function
 from django.http import HttpResponse, JsonResponse
 from django.views.generic.base import View
 from django.views.decorators.csrf import csrf_exempt
-import json, os, sys
+import json, sys
 
 # TODO there's probably a better way to do this with an environment variable
 sys.path.insert(0,'..')

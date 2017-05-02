@@ -41,17 +41,10 @@ if __name__ == "__main__":
                 else:
                     break
 
-                    # Language specification for user commands:
-                    # wepick [hero_name]
-                    # weban [hero_name]
-                    # theypick [hero_name]
-                    # theyban [hero_name]
-                    # after each command, the current neighborhood of likely picks is printed
-                    # (sorted from highest to lowest probability)
-
-                    # Example usage of classes:
-                    # team0 = Team()
-                    # am = Hero.byName("antimage")
-                    # print("AM ID:", am.getID())
-                    # team0.pick(am)
-                    # print("AM picked/banned:", am in team0)
+# Language specification for user commands:
+# wepick [hero_name]
+# weban [hero_name]
+# theypick [hero_name]
+# theyban [hero_name]
+# after each command, the current neighborhood of likely picks is printed
+# (sorted from highest to lowest probability)

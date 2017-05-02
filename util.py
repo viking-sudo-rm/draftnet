@@ -27,6 +27,7 @@ PICK_BAN_ORDER = [(False, 0),  # where the picker is on team 0
 def readCMGamesFromJSON(filename):
     return [game for game in json.load(open(filename, "r")) if len(game["picks_bans"]) == 20]
 
+
 class Hero:
 
     def __init__(self, json):

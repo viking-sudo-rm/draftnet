@@ -13,7 +13,7 @@ EPOCHS = 100
 
 # takes very close to 2^n iterations to reduce loss by one place with NUM_BATCHES = 1000000 and LEARNING_RATE = 0.0001
 
-PICK_THRESHOLD = 0.40
+PICK_THRESHOLD = 0.35
 
 # create our nodes for the graph.
 
@@ -98,7 +98,7 @@ def getNotAllowed(context):
     return notAllowed
 
 # returns a list of possible picks from greatest to least probability
-def getSuggestions(distribution, notAllowed):
+def getSuggestions(distribution, notAllowed, PICK_THRESHOLD=PICK_THRESHOLD):
 
     # found the max-allowed prediction
     max_p = 0.0
@@ -116,7 +116,7 @@ def getSuggestions(distribution, notAllowed):
     # return the picks from greatest to least probability
     return sorted(picks, key=lambda i: 1 - distribution[i])
 
-def testInSession(test, session):
+def testInSession(test, session, PICK_THRESHOLD=PICK_THRESHOLD):
     print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
     counts = [0.0] * 10
     neighborhood_sizes = [0.0] * 10
@@ -126,12 +126,13 @@ def testInSession(test, session):
         #TODO change this to be 
         for i, distribution in enumerate(distributions):
             notAllowed = getNotAllowed(x[i])
-            picks = getSuggestions(distribution, notAllowed)
+            picks = getSuggestions(distribution, notAllowed, PICK_THRESHOLD=PICK_THRESHOLD)
             neighborhood_sizes[i] += len(picks)
             if np.argmax(y[i]) in picks:
                 counts[i] += 1
     print("accuracies:", [c / len(test) for c in counts])
     print("neighborhood sizes:", [n / len(test) for n in neighborhood_sizes])
+
 
 if __name__ == "__main__":
 
