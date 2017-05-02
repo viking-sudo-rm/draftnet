@@ -8,11 +8,9 @@ import json, os, sys
 # TODO there's probably a better way to do this with an environment variable
 sys.path.insert(0,'..')
 from bagHeroes import *
-# sys.path.pop(0)
 
 MODEL = "../results/bag-100-1000000-0.01-50.ckpt"
 
-# session = tf.get_default_session()
 with session.as_default():
     saver = tf.train.Saver()
     saver.restore(session, MODEL)
@@ -37,8 +35,6 @@ def predict(request):
 
 	if not team0 or not team1:
 		return JsonResponse(None, safe=False)
-
-	# TODO this session should be always loaded?
 
 	context = getContext(team0, team1, isPick)
 	distribution = getDistribution(context, session)
