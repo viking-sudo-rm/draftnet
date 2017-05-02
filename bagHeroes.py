@@ -13,7 +13,7 @@ EPOCHS = 100
 
 # takes very close to 2^n iterations to reduce loss by one place with NUM_BATCHES = 1000000 and LEARNING_RATE = 0.0001
 
-PICK_THRESHOLD = 0.97
+PICK_THRESHOLD = 0.35
 
 # create our nodes for the graph.
 
@@ -31,7 +31,7 @@ b_2 = tf.Variable(tf.zeros([1, N]), name='b2')
 
 h = tf.sigmoid(tf.add(tf.matmul(X, W_1), b_1))     # creates the embedded game information.
 y0 = tf.add(tf.matmul(h, W_2), b_2)
-Y_ = tf.sigmoid(y0)                                # probability distribution of next hero.
+Y_ = tf.nn.softmax(y0)                                # probability distribution of next hero.
 
 # define loss function:
 
@@ -81,41 +81,24 @@ def format(game):
 
     return output
 
-    # team0picks = [0]*N
-    # team0bans = [0]*N
-    # team1picks = [0]*N
-    # team1bans = [0]*N 
-    # if first_pick == 0: #TODO generalize this part
-    #     team0bans = getOneHot(picks_bans[0])
-    # else:
-    #     team1bans = getOneHot(picks_bans[0])
-    # for i in range(1, 20):
-    #     hero_id = getShiftedID(picks_bans[i]['hero_id'])
-    #     is_pick_bit = 1 if picks_bans[i]['is_pick'] else 0
-    #     if picks_bans[i]['team'] == 0:
-    #         a = team0picks + team0bans + team1picks + team1bans + [is_pick_bit]
-    #         output.append((a, getOneHot(picks_bans[i])))
-    #         if picks_bans[i]['is_pick']:
-    #             team0picks[hero_id] = 1 # this is way faster
-    #             # team0picks = list(map(add, team0picks, getOneHot(picks_bans[i])))
-    #         else:
-    #             team0bans[hero_id] = 1
-    #             # team0bans = list(map(add, team0bans, getOneHot(picks_bans[i])))
-    #     else:
-    #         a = team1picks + team1bans + team0picks + team0bans + [is_pick_bit]
-    #         output.append((a, getOneHot(picks_bans[i])))
-    #         if picks_bans[i]['is_pick']:
-    #             team1picks[hero_id] = 1
-    #             # team1picks = list(map(add, team1picks, getOneHot(picks_bans[i])))
-    #         else:
-    #             team1bans[hero_id] = 1
-    #             # team1bans = list(map(add, team1bans, getOneHot(picks_bans[i])))
-    # return output
+def getNames(picks):
+    return [Hero.byID(pick).getName() for pick in picks]
 
-# extracts a set of indexes of likely picks from a probability distribution over heroes
-# distribution is a numpy array representing a probability distribution
-# notAllowed is a list of binary flags for heroes not allowable in the current context
-def getPicks(distribution, notAllowed):
+def getContext(team0, team1, isPick):
+    return team0.getContextVector() + team1.getContextVector() + [1 if isPick else 0]
+
+def getDistribution(context, session):
+    return session.run(Y_, feed_dict={X: [context]})[0]
+
+# collapse a context list x into a flag-set of non-allowable heroes
+def getNotAllowed(context):
+    notAllowed = [False] * N
+    for i in range(len(context) - (len(context) % N)): #whenever we add more extra bits, need to change this number
+        if context[i] == 1: notAllowed[i % N] = True
+    return notAllowed
+
+# returns a list of possible picks from greatest to least probability
+def getSuggestions(distribution, notAllowed, PICK_THRESHOLD=PICK_THRESHOLD):
 
     # found the max-allowed prediction
     max_p = 0.0
@@ -125,26 +108,15 @@ def getPicks(distribution, notAllowed):
     # max_p = np.argmax(distribution)
 
     # find other heroes over PICK_THRESHOLD
-    picks = set()
+    picks = []
     for i, p in enumerate(distribution):
         if p > max_p * PICK_THRESHOLD and not notAllowed[i]:
-            picks.add(i)
-    return picks
+            picks.append(i)
 
+    # return the picks from greatest to least probability
+    return sorted(picks, key=lambda i: 1 - distribution[i])
 
-def getNames(picks):
-    return [Hero.byID(pick).getName() for pick in picks]
-
-
-# collapse a context list x into a flag-set of non-allowable heroes
-def getNotAllowed(context):
-    notAllowed = [False] * N
-    for i in range(len(context) - (len(context) % N)): #whenever we add more extra bits, need to change this number
-        if context[i] == 1: notAllowed[i % N] = True
-    return notAllowed
-
-
-def testInSession(test, session):
+def testInSession(test, session, PICK_THRESHOLD=PICK_THRESHOLD):
     print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
     counts = [0.0] * 10
     neighborhood_sizes = [0.0] * 10
@@ -154,12 +126,13 @@ def testInSession(test, session):
         #TODO change this to be 
         for i, distribution in enumerate(distributions):
             notAllowed = getNotAllowed(x[i])
-            picks = getPicks(distribution, notAllowed)
+            picks = getSuggestions(distribution, notAllowed, PICK_THRESHOLD=PICK_THRESHOLD)
             neighborhood_sizes[i] += len(picks)
             if np.argmax(y[i]) in picks:
                 counts[i] += 1
     print("accuracies:", [c / len(test) for c in counts])
     print("neighborhood sizes:", [n / len(test) for n in neighborhood_sizes])
+
 
 if __name__ == "__main__":
 
@@ -195,3 +168,6 @@ if __name__ == "__main__":
         test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
         testInSession(test, session)
 
+else:
+
+    session = tf.Session() # session for others to use
