@@ -5,7 +5,5 @@ from django.views.generic.base import View
 from django.shortcuts import render
 
 # Create your views here.
-class Homepage(View):
-	def dispatch(request, *args, **kwargs):
-		return HttpResponse("Hello, world.")
-		
+def index(request):
+	return render(request, 'draft/index.html')
