@@ -88,9 +88,9 @@ class Team:
 
     # should add references to Hero objects to these sets
     def __init__(self):
-        # sets holding hero objects
-        self.picks = set()
-        self.bans = set()
+
+        self.picks = [] #set()
+        self.bans = [] #set()
         # TODO change these sets to ordered lists
 
         # vectors with v_i = 1 iff hero i is picked/banned
@@ -99,26 +99,31 @@ class Team:
 
     def pick(self, hero):
         if self.isFull(): return False
-        self.picks.add(hero)
+        self.picks.append(hero)
         self.pickVector[hero.getID()] = 1
         return True
 
     def ban(self, hero):
-        self.bans.add(hero)
+        self.bans.append(hero)
         self.banVector[hero.getID()] = 1
+
+    def isPicked(self, hero):
+    	return self.pickVector[hero.getID()] == 1
+
+    def isBanned(self, hero):
+    	return self.banVector[hero.getID()] == 1
+
+    def __contains__(self, hero):
+        return self.isPicked() or self.isBanned()
 
     def isFull(self):
         return len(self.picks) == Team.MAX_PICKS
 
     def getNotAllowed(self):
-        union = self.picks | self.bans
-        return [True if h in union else False for h in Hero.heroes]
+        return [True if self.isPicked(h) or self.isBanned(h) else False for h in Hero.heroes]
 
     def getContextVector(self):
         return self.pickVector + self.banVector
-
-    def __contains__(self, hero):
-        return hero in self.picks or hero in self.bans
 
     @staticmethod
     def getContextVectorFor(team0, team1, pickBit):
