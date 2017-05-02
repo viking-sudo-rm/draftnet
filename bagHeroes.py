@@ -169,14 +169,4 @@ if __name__ == "__main__":
 
 else:
 
-    session = tf.Session()
-    MODEL = "../results/bag-100-1000000-0.01-50.ckpt"
-
-    import os
-    print("cwd", os.getcwd())
-
-    # session = tf.get_default_session()
-    with session.as_default():
-        saver = tf.train.Saver()
-        saver.restore(session, MODEL)
-
+    session = tf.Session() # session for others to use
