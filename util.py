@@ -27,8 +27,8 @@ PICK_BAN_ORDER = [(False, 0),  # where the picker is on team 0
 def readCMGamesFromJSON(filename):
     return [game for game in json.load(open(filename, "r")) if len(game["picks_bans"]) == 20]
 
-
 class Hero:
+
     def __init__(self, json):
         self.json = json
 
@@ -84,6 +84,7 @@ def getVectorForSet(heroSet):
 
 
 class Team:
+
     MAX_PICKS = 5
 
     # should add references to Hero objects to these sets
@@ -126,7 +127,15 @@ class Team:
         return self.pickVector + self.banVector
 
     @staticmethod
-    def getContextVectorFor(team0, team1, pickBit):
-        team0.getContextVector() + team1.getContextVector() + [pickBit]
+    def fromJSON(json):
 
-        # TODO define methods to get neural-net inputs from a Team instance
+    	if "picks" not in json or "bans" not in json:
+    		return None
+
+    	if type(json["picks"]) != list or type(json["bans"]) != list:
+    		return None
+
+    	t = Team()
+    	for pick in json["picks"]: t.pick(Hero.byID(pick))
+    	for ban in json["bans"]: t.ban(Hero.byID(ban))
+    	return t

@@ -26,8 +26,8 @@ if __name__ == "__main__":
                 x = team0.getContextVector() + team1.getContextVector()
                 pick_distribution = session.run(Y_, feed_dict={X: [x + [1]]})[0]
                 ban_distribution = session.run(Y_, feed_dict={X: [x + [0]]})[0]
-                print("picks:", ", ".join(getNames(getPicks(pick_distribution, notAllowed))))
-                print("bans:", ", ".join(getNames(getPicks(ban_distribution, notAllowed))))
+                print("picks:", ", ".join(getNames(getSuggestions(pick_distribution, notAllowed))))
+                print("bans:", ", ".join(getNames(getSuggestions(ban_distribution, notAllowed))))
 
                 action, arg = input("> ").split(" ")
                 if action == "wepick":
