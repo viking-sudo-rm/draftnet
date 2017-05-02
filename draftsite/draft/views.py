@@ -8,9 +8,14 @@ from django.shortcuts import render
 import sys
 oldPath = sys.path
 sys.path.insert(0,'..')
-from bagHeroes import *
+# from bagHeroes import *
+from .models import Hero
+
 sys.path = oldPath
 
 # Create your views here.
 def index(request):
-	return render(request, 'draft/index.html')
+	context  = {
+		"heroArray": Hero.objects.all()
+	}
+	return render(request, 'draft/index.html', context)

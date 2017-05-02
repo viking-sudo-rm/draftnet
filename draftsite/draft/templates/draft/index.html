@@ -1,3 +1,7 @@
-<b>Bold stuff</b>
 {% load static %}
-<img src="{% static "draft/images/hero_icons/bane.png" %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'draft/style.css' %}" />
+<b>Bold stuff</b>
+<br>
+{% for hero in heroArray %}
+	<img class="grid" src="{% static "draft/images/hero_icons/" %}{{ hero.name }}.png">
+{% endfor %}

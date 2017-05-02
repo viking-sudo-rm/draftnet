@@ -28,55 +28,58 @@ def readCMGamesFromJSON(filename):
     return [game for game in json.load(open(filename, "r")) if len(game["picks_bans"]) == 20]
 
 
-class Hero:
-    def __init__(self, json):
-        self.json = json
+# class Hero:
+#     def __init__(self, json):
+#         self.json = json
 
-    def getID(self):
-        return self.json["id"]
+#     def getID(self):
+#         return self.json["id"]
 
-    def getName(self):
-        return self.json["localized_name"]
+#     def getName(self):
+#         return self.json["localized_name"]
 
-    def getIconURL(self):
-    	return "/static/draft/images/hero_icons/" + self.json["name"].replace("npc_dota_hero_", "") + ".png"
+#     def getIconURL(self):
+#     	return "/static/draft/images/hero_icons/" + self.json["name"].replace("npc_dota_hero_", "") + ".png"
 
-    @classmethod
-    def byID(cls, id):
-        return cls.heroes[id]
+#     @classmethod
+#     def byID(cls, id):
+#         return cls.heroes[id]
 
-    @classmethod
-    def byName(cls, name):
-        return cls.heroByName[cls.getPlainName(name)]
+#     @classmethod
+#     def byName(cls, name):
+#         return cls.heroByName[cls.getPlainName(name)]
 
-    @staticmethod
-    def getPlainName(name):
-        # TODO use regex here
-        return name.lower().replace(" ", "").replace("_", "").replace("-", "")
+#     @staticmethod
+#     def getPlainName(name):
+#         # TODO use regex here
+#         return name.lower().replace(" ", "").replace("_", "").replace("-", "")
 
 
 # TODO store heroes by ID
 print("downloading hero data..")
-Hero.heroes = requests.get("https://api.opendota.com/api/heroes").json()
+heroes = requests.get("https://api.opendota.com/api/heroes").json()
+
+# for hero in heroes:
+#   Hero(name=hero['name'].replace("npc_dota_hero_", ""), localized_name = hero['localized_name'], primary_attr = hero['primary_attr'], attack_type = hero['attack_type']).save()
 
 # maps from apiID -> localID
-_idMap = {Hero.heroes[i]["id"]: i for i in range(len(Hero.heroes))}
-_idMapInv = {i: Hero.heroes[i]["id"] for i in range(len(Hero.heroes))}
+# _idMap = {Hero.heroes[i]["id"]: i for i in range(len(Hero.heroes))}
+# _idMapInv = {i: Hero.heroes[i]["id"] for i in range(len(Hero.heroes))}
 
 
-def getShiftedID(apiID):
-    return _idMap[apiID]
+# def getShiftedID(apiID):
+#     return _idMap[apiID]
 
 
-def getUnshiftedID(localID):
-    return _idMapInv[localID]
+# def getUnshiftedID(localID):
+#     return _idMapInv[localID]
 
 
-for hero in Hero.heroes:
-    hero["id"] = getShiftedID(hero["id"])
+# for hero in Hero.heroes:
+#     hero["id"] = getShiftedID(hero["id"])
 
-Hero.heroes = [Hero(hero) for hero in Hero.heroes]
-Hero.heroByName = {Hero.getPlainName(hero.getName()): hero for hero in Hero.heroes}
+# Hero.heroes = [Hero(hero) for hero in Hero.heroes]
+# Hero.heroByName = {Hero.getPlainName(hero.getName()): hero for hero in Hero.heroes}
 
 
 def getVectorForSet(heroSet):
