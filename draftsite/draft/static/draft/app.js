@@ -80,12 +80,8 @@
 		}
 
 		this.isValidSelection = function() {
-			var id = self.getSelectedElement().attr("hero-id")
-			console.log(self.teams)
-			// console.log(self.getSelectedElement().attr("hero-id"))
-			// console.log(self.inTeam(id, self.teams[0]))
-			// console.log(self.inTeam(id, self.teams[1]))
-			return self.selectedHero && !(self.inTeam(id, self.teams[0]) || self.inTeam(id, self.teams[1]))
+			var id = self.getSelectedElement().hasClass()
+			return self.selectedHero && !self.getSelectedElement().hasClass("taken")
 		}
 
 		//TODO this logic needs to be implemented; this is placeholder
