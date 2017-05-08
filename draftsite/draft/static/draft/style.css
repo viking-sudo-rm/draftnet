@@ -7,8 +7,12 @@ img.grid {
 
 img.grid.filtered {
 	-webkit-filter: sepia(100%);
+/*	opacity: 0.7;
+	background-color: black;*/
 }
 
-img.grid.notAvailable {
+img.grid.taken {
 	-webkit-filter: sepia(50%);
+/*	opacity: 0.9;
+	background-color: black;*/
 }

@@ -4,15 +4,22 @@
 	<title>Draftnet</title>
 	<link rel="stylesheet" type="text/css" href="{% static 'draft/style.css' %}" />
 	<script type="text/javascript" src="{% static 'draft/angular/angular.js' %}"></script>
+	<script type="text/javascript" src="{% static 'draft/jquery-3.2.1.min.js' %}"></script>
 	<!--<script type="text/javascript" src="{% static 'draft/angular/angular.min.js' %}"></script>-->
 	<script type="text/javascript" src="{% static 'draft/app.js' %}"></script>
 </head>
 <body ng-controller="DraftController as draftCtrl">
 <b>Bold stuff</b>
-<input type="text" ng-model="draftCtrl.searchFilter" ng-change="draftCtrl.updateHeroSelections()" />
-<br>
+<input type="text" ng-model="draftCtrl.searchFilter" />
+<div id="heroList">
 {% for hero in heroArray %}
-	<img class="grid" id="{{ hero.name }}" src="{% static "draft/images/hero_icons/" %}{{ hero.name }}.png">
+	<img class="grid" id="{{ hero.name }}" name="{{ hero.localized_name }}" hero-id={{ hero.id }} src="{% static "draft/images/hero_icons/" %}{{ hero.name }}.png" ng-class="{'filtered' : draftCtrl.isFiltered('{{ hero.name }}'), 'taken' : draftCtrl.isTaken({{ hero.id }})}" ng-click="draftCtrl.selectHero('{{ hero.name }}')">
 {% endfor %}
+</div>
+<div id="selector" ng-if="draftCtrl.selectedHero">
+	<button ng-click="draftCtrl.pick()">Pick</button>
+	<button ng-click="draftCtrl.ban()">Ban</button>
+</div>
+<meta ng-init="draftCtrl.loadHeroes('{{ hero.name }}')" />
 </body>
 </html>
