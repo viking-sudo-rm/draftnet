@@ -76,7 +76,6 @@ for hero in Hero.heroes:
 Hero.heroes = [Hero(hero) for hero in Hero.heroes]
 Hero.heroByName = {Hero.getPlainName(hero.getName()): hero for hero in Hero.heroes}
 
-
 def getVectorForSet(heroSet):
     return [1 if hero in heroSet else 0 for hero in Hero.heroes]
 
