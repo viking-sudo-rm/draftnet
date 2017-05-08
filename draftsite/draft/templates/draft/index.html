@@ -16,9 +16,14 @@
 	<img class="grid" id="{{ hero.name }}" name="{{ hero.localized_name }}" hero-id={{ hero.id }} src="{% static "draft/images/hero_icons/" %}{{ hero.name }}.png" ng-class="{'filtered' : draftCtrl.isFiltered('{{ hero.name }}'), 'selected' : draftCtrl.isSelected('{{ hero.name }}')}" ng-click="draftCtrl.selectHero('{{ hero.name }}')">
 {% endfor %}
 </div>
-<div id="selector" ng-if="draftCtrl.selectedHero">
+<div id="selector" ng-if="draftCtrl.isValidSelection()">
 	<button ng-click="draftCtrl.choose()">Choose</button>
 </div>
-<meta ng-init="draftCtrl.loadHeroes('{{ hero.name }}')" />
+<div id="prediction" ng-if="draftCtrl.prediction">
+	<span ng-repeat="heroID in draftCtrl.prediction.suggestions">
+		<img ng-src="{[{draftCtrl.getImageForID(heroID)}]}" />
+	</span>
+</div>
+<meta ng-init="draftCtrl.loadHeroes()" />
 </body>
 </html>

@@ -6,12 +6,18 @@
 
 	var app = angular.module('draftnet', []);
 
+	// use a different symbol for variable text because Django and Angular conflict
+	app.config(function($interpolateProvider) {
+	  $interpolateProvider.startSymbol('{[{');
+	  $interpolateProvider.endSymbol('}]}');
+	});
+
 	app.controller('DraftController', function($scope, $window, $http){
 
 		const N = 113
 		var self = this
 
-		var pickCounter = 0
+		self.pickCounter = 0
 		const PICK_BAN_ORDER = 	[{"pick": false, "team": 0},  // where the picker is on team 0 (TODO change)
         						 {"pick": false, "team": 1},
                   				 {"pick": false, "team": 0},
@@ -46,16 +52,9 @@
 		this.searchFilter = ""
 		this.selectedHero = undefined
 
-		this.loadHeroes = function() {
-			self.heroes = $('#heroList .grid').map(function(){
-				return $(this).attr('id');
-			}).get();
-			console.log(self.heroes)
-		}
-
-		this.inTeam = function(heroId, team) {
+		this.inTeam = function(id, team) {
 			inList = (x, l) => (l.indexOf(x) != -1)
-			return inList(heroId, team["picks"]) || inList(heroId, team["bans"])
+			return inList(id, team["picks"]) || inList(id, team["bans"])
 		}
 
 		this.isFiltered = function(hero) {
@@ -76,16 +75,53 @@
 			return hero == self.selectedHero
 		}
 
+		this.getSelectedElement = function() {
+			return angular.element(document.querySelector("#" + self.selectedHero));
+		}
+
+		this.isValidSelection = function() {
+			var id = self.getSelectedElement().attr("hero-id")
+			console.log(self.teams)
+			// console.log(self.getSelectedElement().attr("hero-id"))
+			// console.log(self.inTeam(id, self.teams[0]))
+			// console.log(self.inTeam(id, self.teams[1]))
+			return self.selectedHero && !(self.inTeam(id, self.teams[0]) || self.inTeam(id, self.teams[1]))
+		}
+
 		//TODO this logic needs to be implemented; this is placeholder
 		//TODO hero IDs are wrong (the ones used in Python are down-shifted); import from Python environment instead of from the web
 		this.choose = function() {
-			var pickBan = PICK_BAN_ORDER[pickCounter++]
-			var element = angular.element(document.querySelector("#" + self.selectedHero));
+			var pickBan = PICK_BAN_ORDER[self.pickCounter++]
+			var element = self.getSelectedElement();
 			element.addClass("taken");
-			console.log(element)
-			console.log(element.attr("hero-id"))
-			self.teams[pickBan.team][pickBan.pick ? "picks" : "bans"].push(element.attr("hero-id"))
-			console.log(self.teams)
+			self.teams[pickBan.team][pickBan.pick ? "picks" : "bans"].push(parseInt(element.attr("hero-id")))
+			self.predict()
+		}
+
+		this.predict = function() {
+			data = {
+				"team0": self.teams[0],
+				"team1": self.teams[1],
+				"isPick": PICK_BAN_ORDER[self.pickCounter]["pick"]
+			}
+			$http.post("/api/predict/", data)
+				.then(function successCallback(response) {
+				    self.prediction = response.data
+				    console.log(self.prediction)
+			})
+		}
+
+		this.loadHeroes = function() {
+			self.byID = {}
+			heroes = $('#heroList .grid').map(function(){
+
+				self.byID[$(this).attr('hero-id')] = this
+			}).get();
+			console.log(self.byID)
+		}
+
+		this.getImageForID = function(id) {
+			return self.byID[id].getAttribute("src")
 		}
 
 	});
