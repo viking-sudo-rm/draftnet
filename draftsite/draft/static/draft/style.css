@@ -1,0 +1,14 @@
+img.grid {
+	display: inline-block;
+	width: 63;
+	height: 36;
+	-webkit-filter: sepia(0%);
+}
+
+img.grid.filtered {
+	-webkit-filter: sepia(100%);
+}
+
+img.grid.notAvailable {
+	-webkit-filter: sepia(50%);
+}

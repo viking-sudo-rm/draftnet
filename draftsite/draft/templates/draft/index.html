@@ -1,5 +1,5 @@
 {% load static %}
-<html ng-module"draftnet">
+<html ng-app="draftnet">
 <head>
 	<title>Draftnet</title>
 	<link rel="stylesheet" type="text/css" href="{% static 'draft/style.css' %}" />
@@ -9,7 +9,7 @@
 </head>
 <body ng-controller="DraftController as draftCtrl">
 <b>Bold stuff</b>
-<input type="text" ng-change="draftCtrl.updateHeroSelections()">
+<input type="text" ng-model="draftCtrl.searchFilter" ng-change="draftCtrl.updateHeroSelections()" />
 <br>
 {% for hero in heroArray %}
 	<img class="grid" id="{{ hero.name }}" src="{% static "draft/images/hero_icons/" %}{{ hero.name }}.png">
