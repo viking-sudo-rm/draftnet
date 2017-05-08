@@ -3,16 +3,21 @@ img.grid {
 	width: 63;
 	height: 36;
 	-webkit-filter: sepia(0%);
+	margin: 4px;
 }
 
 img.grid.filtered {
-	-webkit-filter: sepia(100%);
+	-webkit-filter: sepia(85%);
 /*	opacity: 0.7;
 	background-color: black;*/
 }
 
 img.grid.taken {
-	-webkit-filter: sepia(50%);
+	-webkit-filter: sepia(100%);
 /*	opacity: 0.9;
 	background-color: black;*/
+}
+
+img.grid.selected {
+	border:2px solid #021a40;
 }

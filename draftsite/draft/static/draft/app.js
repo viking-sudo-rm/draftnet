@@ -11,12 +11,37 @@
 		const N = 113
 		var self = this
 
+		var pickCounter = 0
+		const PICK_BAN_ORDER = 	[{"pick": false, "team": 0},  // where the picker is on team 0 (TODO change)
+        						 {"pick": false, "team": 1},
+                  				 {"pick": false, "team": 0},
+                  				 {"pick": false, "team": 1},
+
+								 {"pick": true, "team": 0},
+								 {"pick": true, "team": 1},
+								 {"pick": true, "team": 1},
+								 {"pick": true, "team": 0},
+
+								 {"pick": false, "team": 1},
+								 {"pick": false, "team": 0},
+								 {"pick": false, "team": 1},
+								 {"pick": false, "team": 0},
+
+								 {"pick": true, "team": 1},
+								 {"pick": true, "team": 0},
+								 {"pick": true, "team": 1},
+								 {"pick": true, "team": 0},
+
+								 {"pick": false, "team": 1},
+								 {"pick": false, "team": 0},
+								 {"pick": true, "team": 1},
+								 {"pick": true, "team": 0}];
+
 		makeTeam = function() {
 			return {"picks": [], "bans": []}
 		}
 
-		this.team0 = makeTeam()
-		this.team1 = makeTeam()
+		this.teams = [makeTeam(), makeTeam()]
 
 		this.searchFilter = ""
 		this.selectedHero = undefined
@@ -42,25 +67,25 @@
 			return !hero.toLowerCase().includes(searchText) && !heroName.toLowerCase().includes(searchText)
 		}
 
-		this.isTaken = function(heroId) {
-			return this.inTeam(heroId, this.team0) || this.inTeam(heroId, this.team1)
-		}
-
 		this.selectHero = function(hero) {
 			self.selectedHero = hero
+
+		}
+
+		this.isSelected = function(hero) {
+			return hero == self.selectedHero
 		}
 
 		//TODO this logic needs to be implemented; this is placeholder
 		//TODO hero IDs are wrong (the ones used in Python are down-shifted); import from Python environment instead of from the web
-		this.pick = function() {
-			var id = document.getElementById(self.selectedHero).getAttribute("hero-id")
-			self.team0["picks"].push(id)
-			console.log(id)
-		}
-
-		this.ban = function() {
-			var id = document.getElementById(self.selectedHero).getAttribute("hero-id")
-			self.team0["bans"].push(id)
+		this.choose = function() {
+			var pickBan = PICK_BAN_ORDER[pickCounter++]
+			var element = angular.element(document.querySelector("#" + self.selectedHero));
+			element.addClass("taken");
+			console.log(element)
+			console.log(element.attr("hero-id"))
+			self.teams[pickBan.team][pickBan.pick ? "picks" : "bans"].push(element.attr("hero-id"))
+			console.log(self.teams)
 		}
 
 	});
