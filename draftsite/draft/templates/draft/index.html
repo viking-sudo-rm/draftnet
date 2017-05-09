@@ -2,19 +2,34 @@
 <html ng-app="draftnet">
 <head>
 	<title>Draftnet</title>
-	<link rel="stylesheet" type="text/css" href="{% static 'draft/style.css' %}" />
+
 	<script type="text/javascript" src="{% static 'draft/angular/angular.js' %}"></script>
 	<script type="text/javascript" src="{% static 'draft/jquery-3.2.1.min.js' %}"></script>
 	<!--<script type="text/javascript" src="{% static 'draft/angular/angular.min.js' %}"></script>-->
 	<script type="text/javascript" src="{% static 'draft/app.js' %}"></script>
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+	<link rel="stylesheet" type="text/css" href="{% static 'draft/style.css' %}" />
+
 </head>
 <body ng-controller="DraftController as draftCtrl">
-<span class="choosing" ng-if="draftCtrl.isChoosing()">Your turn to <b>[[draftCtrl.getNextActionTitle().toLowerCase()]]</b></span>
-<span class="reporting" ng-if="!draftCtrl.isChoosing()">Enemy's turn to <b>[[draftCtrl.getNextActionTitle().toLowerCase()]]</b></span>
-<div id="selector" ng-if="draftCtrl.isValidSelection()">
-	<button ng-click="draftCtrl.choose()">[[ draftCtrl.getNextActionTitle() ]]</button>
-</div><br />
-<input type="text" ng-model="draftCtrl.searchFilter" />
+<img src="{% static 'draft/images/titan_background.jpg' %}" id="background" />
+<div id="topBar">
+	<span class="nextActionText choosing" ng-if="draftCtrl.isChoosing()">Your turn to <b>[[draftCtrl.getNextActionTitle().toLowerCase()]]</b></span>
+	<span class="nextActionText reporting" ng-if="!draftCtrl.isChoosing()">Enemy's turn to <b>[[draftCtrl.getNextActionTitle().toLowerCase()]]</b></span>
+	<input type="text" id="filter" class="form-control" ng-model="draftCtrl.searchFilter" />
+	<span id="selector" ng-if="draftCtrl.isValidSelection()">
+		<button ng-click="draftCtrl.choose()" class="btn btn-info">[[ draftCtrl.getNextActionTitle() ]]</button>
+	</span>
+</div>
 <div id="heroGrid">
 	<img class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'taken' : draftCtrl.isPicked(hero), 'choosing' : draftCtrl.isChoosing(), 'reporting' : !draftCtrl.isChoosing()}" ng-click="draftCtrl.selectHero(hero)">
 </div>
@@ -24,5 +39,6 @@
 		<img class="suggestion" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" />
 	</span>
 </div>
+<!-- TODO should display draft status as well -->
 </body>
 </html>

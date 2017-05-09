@@ -97,6 +97,7 @@
 			self.picked.push(self.selectedHero)
 			self.teams[pickBan.team][pickBan.pick ? "picks" : "bans"].push(self.selectedHero.id)
 			self.predict()
+			self.searchFilter = ""
 		}
 
 		self.predict = function() {

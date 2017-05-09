@@ -18,14 +18,61 @@ img.grid.taken {
 
 img.grid.selected {
 	outline: 2px solid;
+	opacity: 1.0;
+}
+
+img#background {
+	position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    opacity: 0.6;
+    z-index: -1;
 }
 
 .choosing {
-	color: #00ff00;
+	color: green;
 	outline-color: green;
 }
 
 .reporting {
-	color: #ff0000;
+	color: red;
 	outline-color: red;
+}
+
+div#topBar {
+	width: 100%;
+	padding: 20px 20px 20px 20px;
+	position: relative;
+	margin-bottom: 30px;
+	height: 60px;
+	top: 0;
+	right: 0;
+	opacity: 0.85;
+	/*margin-bottom: 30px;*/
+	background-image: linear-gradient(135deg,#2e2d45,#1c2127);
+	background-color: rgba(0,0,0,.4)!important;
+}
+
+input#filter {
+	display: inline-block;
+	height: 30px;
+	margin-top: -5px;
+	width: 200px;
+	position: absolute;
+	left: 400px;
+	background-image: linear-gradient(135deg,#2e2d45,#1c2127);
+	border-color: #1c2127;
+}
+
+.nextActionText {
+	position: absolute;
+	/*margin-top: -5px;*/
+	left: 100px;
+}
+
+body {
+	font-family: "Lucida Grande", Tahoma, Verdana, Arial, sans-serif;
+	background-color: black;
 }
