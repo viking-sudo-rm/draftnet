@@ -16,7 +16,7 @@
 </div><br />
 <input type="text" ng-model="draftCtrl.searchFilter" />
 <div id="heroGrid">
-	<img class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'taken' : draftCtrl.isPicked(hero)}" ng-click="draftCtrl.selectHero(hero)">
+	<img class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'taken' : draftCtrl.isPicked(hero), 'choosing' : draftCtrl.isChoosing(), 'reporting' : !draftCtrl.isChoosing()}" ng-click="draftCtrl.selectHero(hero)">
 </div>
 <div id="prediction" ng-if="draftCtrl.prediction">
 	<h2>Suggestions</h2>

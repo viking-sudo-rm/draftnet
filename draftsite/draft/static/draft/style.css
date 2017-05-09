@@ -17,13 +17,15 @@ img.grid.taken {
 }
 
 img.grid.selected {
-	border:2px solid #021a40;
+	outline: 2px solid;
 }
 
 .choosing {
 	color: #00ff00;
+	outline-color: green;
 }
 
 .reporting {
 	color: #ff0000;
+	outline-color: red;
 }
