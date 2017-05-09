@@ -2,7 +2,7 @@ import requests
 import os
 import bs4
 
-os.makedirs('hero_icons', exist_ok=True)
+os.makedirs('hero_icons')
 
 url = 'http://www.dota2.com/heroes/'
 

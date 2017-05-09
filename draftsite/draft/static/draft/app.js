@@ -92,8 +92,6 @@
 			return self.picked.indexOf(hero) != -1
 		}
 
-		//TODO this logic needs to be implemented; this is placeholder
-		//TODO hero IDs are wrong (the ones used in Python are down-shifted); import from Python environment instead of from the web
 		self.choose = function() {
 			var pickBan = PICK_BAN_ORDER[self.pickCounter++]
 			self.picked.push(self.selectedHero)
