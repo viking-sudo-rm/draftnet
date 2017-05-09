@@ -3,11 +3,13 @@ from __future__ import unicode_literals, print_function
 from django.http import HttpResponse, JsonResponse
 from django.views.generic.base import View
 from django.views.decorators.csrf import csrf_exempt
+from django.core import serializers
 import json, sys
 
 # TODO there's probably a better way to do this with an environment variable
 sys.path.insert(0,'..')
 from bagHeroes import *
+from .models import Hero
 
 MODEL = "../results/bag-100-1000000-0.01-50.ckpt"
 
@@ -42,3 +44,11 @@ def predict(request):
 
 	return JsonResponse({	"distribution": [float(d) for d in distribution],
 							"suggestions": suggestions	})
+def heroes(request):
+	heroList = json.loads(serializers.serialize('json', Hero.objects.all()))
+	result = []
+	for hero in heroList:
+		obj = hero['fields']
+		obj['id'] = hero['pk']
+		result.append(obj)
+	return JsonResponse(result, safe=False)

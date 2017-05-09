@@ -29,7 +29,7 @@ def readCMGamesFromJSON(filename):
     return [game for game in json.load(open(filename, "r")) if len(game["picks_bans"]) == 20]
 
 
-class Hero:
+class APIHero:
     def __init__(self, json):
         self.json = json
 
@@ -57,11 +57,11 @@ class Hero:
 
 
 print("downloading hero data..")
-Hero.heroes = requests.get("https://api.opendota.com/api/heroes").json()
+APIHero.heroes = requests.get("https://api.opendota.com/api/heroes").json()
 
 # maps from apiID -> localID
-_idMap = {Hero.heroes[i]["id"]: i for i in range(len(Hero.heroes))}
-_idMapInv = {i: Hero.heroes[i]["id"] for i in range(len(Hero.heroes))}
+_idMap = {APIHero.heroes[i]["id"]: i for i in range(len(APIHero.heroes))}
+_idMapInv = {i: APIHero.heroes[i]["id"] for i in range(len(APIHero.heroes))}
 
 def getShiftedID(apiID):
     return _idMap[apiID]
@@ -71,19 +71,19 @@ def getUnshiftedID(localID):
     return _idMapInv[localID]
 
 
-for hero in Hero.heroes:
+for hero in APIHero.heroes:
     hero["id"] = getShiftedID(hero["id"])
 
-Hero.heroes = [Hero(hero) for hero in Hero.heroes]
-Hero.heroByName = {Hero.getPlainName(hero.getName()): hero for hero in Hero.heroes}
+APIHero.heroes = [APIHero(hero) for hero in APIHero.heroes]
+APIHero.heroByName = {APIHero.getPlainName(hero.getName()): hero for hero in APIHero.heroes}
 
 def getVectorForSet(heroSet):
-    return [1 if hero in heroSet else 0 for hero in Hero.heroes]
+    return [1 if hero in heroSet else 0 for hero in APIHero.heroes]
 
 class Team:
     MAX_PICKS = 5
 
-    # should add references to Hero objects to these sets
+    # should add references to APIHero objects to these sets
     def __init__(self):
         # sets holding hero objects
         self.picks = set()
@@ -109,7 +109,7 @@ class Team:
 
     def getNotAllowed(self):
         union = self.picks | self.bans
-        return [True if h in union else False for h in Hero.heroes]
+        return [True if h in union else False for h in APIHero.heroes]
 
     def getContextVector(self):
         return self.pickVector + self.banVector
@@ -124,6 +124,6 @@ class Team:
     @staticmethod
     def fromJSON(json):
       t = Team()
-      for pick in json["picks"]: t.pick(Hero.byID(pick))
-      for ban in json["bans"]: t.ban(Hero.byID(ban))
+      for pick in json["picks"]: t.pick(APIHero.byID(pick))
+      for ban in json["bans"]: t.ban(APIHero.byID(ban))
       return t

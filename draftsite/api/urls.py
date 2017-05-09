@@ -4,4 +4,5 @@ from . import views
 
 urlpatterns = [
     url(r'^predict', views.predict, name='predict'),
+    url(r'^heroes', views.heroes, name='heroes'),
 ]

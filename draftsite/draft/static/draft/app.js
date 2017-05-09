@@ -8,14 +8,21 @@
 
 	// use a different symbol for variable text because Django and Angular conflict
 	app.config(function($interpolateProvider) {
-	  $interpolateProvider.startSymbol('{[{');
-	  $interpolateProvider.endSymbol('}]}');
+	  $interpolateProvider.startSymbol('[[');
+	  $interpolateProvider.endSymbol(']]');
 	});
 
 	app.controller('DraftController', function($scope, $window, $http){
 
 		const N = 113
 		var self = this
+		self.list = []
+		$http.get("/api/heroes/")
+				.then(function (response) {
+				    self.list = response.data
+		}, function(data) {
+                console.log('Error: ' + data);
+        })
 
 		self.pickCounter = 0
 		const PICK_BAN_ORDER = 	[{"pick": false, "team": 0},  // where the picker is on team 0 (TODO change)
@@ -43,58 +50,53 @@
 								 {"pick": true, "team": 1},
 								 {"pick": true, "team": 0}];
 
-		makeTeam = function() {
-			return {"picks": [], "bans": []}
+		var Team = function() {
+			this.picks = []
+			this.bans = []
 		}
 
-		this.teams = [makeTeam(), makeTeam()]
+		self.teams = [new Team(), new Team()]
 
-		this.searchFilter = ""
-		this.selectedHero = undefined
+		self.searchFilter = ""
+		self.selectedHero = undefined
+		self.picked = []
 
-		this.inTeam = function(id, team) {
+		self.inTeam = function(hero, team) {
 			inList = (x, l) => (l.indexOf(x) != -1)
-			return inList(id, team["picks"]) || inList(id, team["bans"])
+			return inList(hero, team["picks"]) || inList(hero, team["bans"])
 		}
 
-		this.isFiltered = function(hero) {
+		self.isFiltered = function(hero) {
 			if (self.searchFilter == "") {
 				return false
 			}
-			var heroName = document.getElementById(hero).name
-			var searchText = this.searchFilter.toLowerCase()
-			return !hero.toLowerCase().includes(searchText) && !heroName.toLowerCase().includes(searchText)
+			
+			var searchText = self.searchFilter.toLowerCase()
+			return !hero.name.toLowerCase().includes(searchText) && !hero.localized_name.toLowerCase().includes(searchText)
 		}
 
-		this.selectHero = function(hero) {
+		self.selectHero = function(hero) {
 			self.selectedHero = hero
-
 		}
 
-		this.isSelected = function(hero) {
+		self.isSelected = function(hero) {
 			return hero == self.selectedHero
 		}
 
-		this.getSelectedElement = function() {
-			return angular.element(document.querySelector("#" + self.selectedHero));
-		}
-
-		this.isValidSelection = function() {
-			var id = self.getSelectedElement().hasClass()
-			return self.selectedHero && !self.getSelectedElement().hasClass("taken")
+		self.isValidSelection = function() {
+			return self.selectedHero && self.picked.indexOf(self.selectedHero) == -1
 		}
 
 		//TODO this logic needs to be implemented; this is placeholder
 		//TODO hero IDs are wrong (the ones used in Python are down-shifted); import from Python environment instead of from the web
-		this.choose = function() {
+		self.choose = function() {
 			var pickBan = PICK_BAN_ORDER[self.pickCounter++]
-			var element = self.getSelectedElement();
-			element.addClass("taken");
-			self.teams[pickBan.team][pickBan.pick ? "picks" : "bans"].push(parseInt(element.attr("hero-id")))
+			self.picked.push(hero)
+			self.teams[pickBan.team][pickBan.pick ? "picks" : "bans"].push(hero.id)
 			self.predict()
 		}
 
-		this.predict = function() {
+		self.predict = function() {
 			data = {
 				"team0": self.teams[0],
 				"team1": self.teams[1],
@@ -107,19 +109,12 @@
 			})
 		}
 
-		this.loadHeroes = function() {
+		self.loadHeroes = function() {
 			self.byID = {}
-			heroes = $('#heroList .grid').map(function(){
-
-				self.byID[$(this).attr('hero-id')] = this
-			}).get();
-			console.log(self.byID)
+			for (var i = 0; i < self.list.length; i++) {
+				self.byID[self.list[i].id] = self.list[i]
+			}
 		}
-
-		this.getImageForID = function(id) {
-			return self.byID[id].getAttribute("src")
-		}
-
 	});
 
 	console.log("loaded draftnet controller in app.js")

@@ -11,17 +11,15 @@
 <body ng-controller="DraftController as draftCtrl">
 <b>Bold stuff</b>
 <input type="text" ng-model="draftCtrl.searchFilter" />
-<div id="heroList">
-{% for hero in heroArray %}
-	<img class="grid" id="{{ hero.name }}" name="{{ hero.localized_name }}" hero-id={{ hero.id }} src="{% static "draft/images/hero_icons/" %}{{ hero.name }}.png" ng-class="{'filtered' : draftCtrl.isFiltered('{{ hero.name }}'), 'selected' : draftCtrl.isSelected('{{ hero.name }}')}" ng-click="draftCtrl.selectHero('{{ hero.name }}')">
-{% endfor %}
+<div id="heroGrid">
+	<img class="grid" ng-repeat="hero in draftCtrl.list" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero)}" ng-click="draftCtrl.selectHero(hero)">
 </div>
 <div id="selector" ng-if="draftCtrl.isValidSelection()">
 	<button ng-click="draftCtrl.choose()">Choose</button>
 </div>
 <div id="prediction" ng-if="draftCtrl.prediction">
 	<span ng-repeat="heroID in draftCtrl.prediction.suggestions">
-		<img ng-src="{[{draftCtrl.getImageForID(heroID)}]}" />
+		<img src="{% static "draft/images/hero_icons/" %}[[draftCtrl.byID[heroID].name]].png" />
 	</span>
 </div>
 <meta ng-init="draftCtrl.loadHeroes()" />
