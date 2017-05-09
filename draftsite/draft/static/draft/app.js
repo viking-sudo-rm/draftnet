@@ -20,6 +20,7 @@
 		$http.get("/api/heroes/")
 				.then(function (response) {
 				    self.list = response.data
+				    self.loadHeroes()
 		}, function(data) {
                 console.log('Error: ' + data);
         })
@@ -91,8 +92,8 @@
 		//TODO hero IDs are wrong (the ones used in Python are down-shifted); import from Python environment instead of from the web
 		self.choose = function() {
 			var pickBan = PICK_BAN_ORDER[self.pickCounter++]
-			self.picked.push(hero)
-			self.teams[pickBan.team][pickBan.pick ? "picks" : "bans"].push(hero.id)
+			self.picked.push(self.selectedHero)
+			self.teams[pickBan.team][pickBan.pick ? "picks" : "bans"].push(self.selectedHero.id)
 			self.predict()
 		}
 
@@ -104,9 +105,15 @@
 			}
 			$http.post("/api/predict/", data)
 				.then(function successCallback(response) {
-				    self.prediction = response.data
-				    console.log(self.prediction)
+					self.prediction = []
+					for (var i = 0; i < response.data.suggestions.length; i++) {
+						self.prediction.push(self.getHeroByID(response.data.suggestions[i]))
+					}
 			})
+		}
+
+		self.getHeroByID = function (id) {
+			return self.byID[id]
 		}
 
 		self.loadHeroes = function() {

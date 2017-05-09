@@ -18,8 +18,8 @@
 	<button ng-click="draftCtrl.choose()">Choose</button>
 </div>
 <div id="prediction" ng-if="draftCtrl.prediction">
-	<span ng-repeat="heroID in draftCtrl.prediction.suggestions">
-		<img src="{% static "draft/images/hero_icons/" %}[[draftCtrl.byID[heroID].name]].png" />
+	<span ng-repeat="hero in draftCtrl.prediction">
+		<img class="suggestion" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" />
 	</span>
 </div>
 <meta ng-init="draftCtrl.loadHeroes()" />
