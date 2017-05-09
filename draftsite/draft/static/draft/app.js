@@ -85,7 +85,11 @@
 		}
 
 		self.isValidSelection = function() {
-			return self.selectedHero && self.picked.indexOf(self.selectedHero) == -1
+			return self.selectedHero && !self.isPicked(self.selectedHero)
+		}
+
+		self.isPicked = function(hero) {
+			return self.picked.indexOf(hero) != -1
 		}
 
 		//TODO this logic needs to be implemented; this is placeholder
