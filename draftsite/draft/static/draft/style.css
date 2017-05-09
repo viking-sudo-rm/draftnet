@@ -21,3 +21,11 @@ img.grid.taken {
 img.grid.selected {
 	border:2px solid #021a40;
 }
+
+.choosing {
+	color: #00ff00;
+}
+
+.reporting {
+	color: #ff0000;
+}
