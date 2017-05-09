@@ -103,7 +103,7 @@
 			data = {
 				"team0": self.teams[0],
 				"team1": self.teams[1],
-				"isPick": PICK_BAN_ORDER[self.pickCounter]["pick"]
+				"isPick": getNextAction()["pick"]
 			}
 			$http.post("/api/predict/", data)
 				.then(function successCallback(response) {
@@ -124,6 +124,21 @@
 				self.byID[self.list[i].id] = self.list[i]
 			}
 		}
+
+		// get the next action (pick/ban + team) represented as an object
+		getNextAction = function() {
+			return PICK_BAN_ORDER[self.pickCounter]
+		}
+
+		// text to go on the button (either "Ban" or "Pick")
+		self.getNextActionTitle = function() {
+			return getNextAction().pick ? "Pick" : "Ban"
+		}
+
+		self.isChoosing = function() {
+			return getNextAction().team == 0
+		}
+
 	});
 
 	console.log("loaded draftnet controller in app.js")
