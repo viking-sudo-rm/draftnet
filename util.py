@@ -83,12 +83,11 @@ def getVectorForSet(heroSet):
 class Team:
     MAX_PICKS = 5
 
-    # should add references to APIHero objects to these sets
     def __init__(self):
+
         # sets holding hero objects
-        self.picks = set()
-        self.bans = set()
-        # TODO change these sets to ordered lists
+        self.picks = []
+        self.bans = []
 
         # vectors with v_i = 1 iff hero i is picked/banned
         self.pickVector = [0] * N
@@ -96,26 +95,32 @@ class Team:
 
     def pick(self, hero):
         if self.isFull(): return False
-        self.picks.add(hero)
+        self.picks.append(hero)
         self.pickVector[hero.getID()] = 1
         return True
 
     def ban(self, hero):
-        self.bans.add(hero)
+        self.bans.append(hero)
         self.banVector[hero.getID()] = 1
 
-    def isFull(self):
-        return len(self.picks) == Team.MAX_PICKS
+    def isPicked(self, hero):
+      return self.pickVector[hero.getID()] == 1
 
+    def isBanned(self, hero):
+      return self.banVector[hero.getID()] == 1
+
+    def __contains__(self, hero):
+      return self.isPicked(hero) or self.isBanned(hero)
+
+    def isFull(self):
+      return len(self.picks) == Team.MAX_PICKS
+
+    # returns a list of boolean flags for each hero
     def getNotAllowed(self):
-        union = self.picks | self.bans
-        return [True if h in union else False for h in APIHero.heroes]
+      return [True if h in self else False for h in APIHero.heroes]
 
     def getContextVector(self):
         return self.pickVector + self.banVector
-
-    def __contains__(self, hero):
-        return hero in self.picks or hero in self.bans
 
     @staticmethod
     def getContextVectorFor(team0, team1, pickBit):
