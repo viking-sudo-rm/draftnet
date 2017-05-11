@@ -16,19 +16,34 @@ body {
 
 .grid {
 	display: inline-block;
-	width: 60px;
 	margin: 4px;
+	position: relative;
 }
 
-.grid.filtered {
-	opacity: 0.5;
-	background-color: black;
+.grid img {
+	width: 60px;
 }
 
-.grid.taken {
+.ban-line {
+	position: absolute;
+	border-top: 3px solid #ff4c4c;
+	transform: rotate(-28deg);
+	left: -6px;
+	right: -6px;
+	top: 16px;
+	z-index: 1;
+}
+
+.filtered {
+	opacity: 0.2 !important;
+}
+
+.picked {
+	opacity: 0.4;
+}
+
+.banned {
 	-webkit-filter: grayscale(100%);
-/*	opacity: 0.9;
-	background-color: black;*/
 }
 
 .selected {
@@ -88,6 +103,7 @@ body {
 	margin: 7px;
 	margin-left: 0px;
 	margin-bottom: 0px;
+
 }
 
 h3.suggestion-text{
@@ -98,16 +114,42 @@ h3.suggestion-text{
 }
 
 #topBar {
-	width: 100%;
 	margin-bottom: 20px;
 	opacity: 0.85;
 	background-color: #2e2d45;
-	padding-top: 10px;
-	padding-bottom: 10px;
+	padding-top: 15px;
+	padding-bottom: 15px;
+	display: flex;
+	align-items: center;
 }
 
 .spacer {
 	height: 92px;
+}
+
+.prediction {
+	padding-left: 40px;
+}
+
+.turn-banner {
+	color: white;
+	font-size: 30px;
+	padding-right: 35px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border-width: 2px 0 2px 0;
+	border-style: solid;
+	transition: 0.6s;
+}
+
+.turn-banner.choosing {
+	background: linear-gradient(to left, #55ad26, transparent);
+	border-image: linear-gradient(to left, #8bd068, #8bd068 40%, transparent) 1;
+}
+
+.turn-banner.reporting {
+	background: linear-gradient(to left, #ad2638, transparent);
+	border-image: linear-gradient(to left, #d0686f, #d0686f 40%, transparent) 1;
 }
 .search-container {
 	margin-bottom: 15px;
@@ -120,5 +162,5 @@ h3.suggestion-text{
 	color: white;
 	font-size: 18px;
 	border: none;
-	padding: 5px 10px;
+	padding: 9px 17px;
 }

@@ -19,22 +19,21 @@
 </head>
 <body ng-controller="DraftController as draftCtrl">
 <img src="{% static 'draft/images/titan_background.jpg' %}" id="background" />
-<div id="topBar">
-	<div class="content-container">
-		<div id="prediction" ng-if="draftCtrl.prediction">
+<div id="topBar" class="row">
+		<div class="prediction col-md-8" ng-if="draftCtrl.prediction">
 			<h3 class="suggestion-text">[[ draftCtrl.getSuggestionText() ]]</h3>
-			<span >
-				<img class="suggestion" ng-repeat="hero in draftCtrl.prediction" ng-class="{'selected' : draftCtrl.isSelected(hero)}" ng-click="draftCtrl.selectHero(hero)" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" />
-			</span>
+			<img class="suggestion" ng-repeat="hero in draftCtrl.prediction" ng-class="{'selected' : draftCtrl.isSelected(hero)}" ng-click="draftCtrl.selectHero(hero)" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" />
 		</div>
-		<div class="spacer" ng-if="!draftCtrl.prediction">
-		</div>
-	</div>
+		<div class="turn-banner col-md-4 text-uppercase text-right" ng-class="{'choosing' : draftCtrl.isChoosing(), 'reporting' : !draftCtrl.isChoosing()}">[[ draftCtrl.getTurnText() ]]</div>
 </div>
 <div class="content-container">
 <div class="text-center search-container"><input type="text" id="search" ng-model="draftCtrl.searchFilter" placeholder="Search heroes..." /></div>
 <div id="heroGrid">
-	<img class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'taken' : draftCtrl.isPicked(hero), 'choosing' : draftCtrl.isChoosing(), 'reporting' : !draftCtrl.isChoosing()}" ng-click="draftCtrl.selectHero(hero)">
+	<div class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'">
+		<div class="ban-line" ng-if="draftCtrl.isBanned(hero)"></div>
+		<img src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'picked' : draftCtrl.isPicked(hero), 'banned' : draftCtrl.isBanned(hero)}" ng-click="draftCtrl.selectHero(hero)">
+	</div>
+	
 </div>
 <div class="button-choose-container text-center"><button ng-if="draftCtrl.isValidSelection()" ng-class="{'ban' : !draftCtrl.getNextAction().pick, 'pick' : draftCtrl.getNextAction().pick }" ng-click="draftCtrl.choose()" class="text-uppercase button-choose">[[ draftCtrl.getNextActionTitle() ]] [[ draftCtrl.selectedHero.localized_name ]]</button></div>
 </div>
