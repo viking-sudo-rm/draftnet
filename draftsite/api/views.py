@@ -18,8 +18,8 @@ with session.as_default():
     saver.restore(session, MODEL)
 
 @csrf_exempt # I don't think this causes security issues, but maybe?
-def predict(request):
 
+def predict(request):
 	try:
 		args = json.loads(request.body)
 	except:
@@ -44,6 +44,7 @@ def predict(request):
 
 	return JsonResponse({	"distribution": [float(d) for d in distribution],
 							"suggestions": suggestions	})
+
 def heroes(request):
 	heroList = json.loads(serializers.serialize('json', Hero.objects.all()))
 	result = []
