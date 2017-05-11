@@ -15,6 +15,7 @@
 	app.controller('DraftController', function($scope, $window, $http){
 
 		const N = 113
+		const MAX_SUGGESTIONS = 10
 		var self = this
 		self.list = []
 		$http.get("/api/heroes/")
@@ -96,20 +97,21 @@
 			var pickBan = PICK_BAN_ORDER[self.pickCounter++]
 			self.picked.push(self.selectedHero)
 			self.teams[pickBan.team][pickBan.pick ? "picks" : "bans"].push(self.selectedHero.id)
-			self.predict()
+			self.predict(self.getNextAction().team)
 			self.searchFilter = ""
 		}
 
-		self.predict = function() {
+		// pass the team you are predicting for
+		self.predict = function(team = 0) {
 			data = {
-				"team0": self.teams[0],
-				"team1": self.teams[1],
+				"team0": team == 0 ? self.teams[0] : self.teams[1],
+				"team1": team == 0 ? self.teams[1] : self.teams[0],
 				"isPick": self.getNextAction()["pick"]
 			}
 			$http.post("/api/predict/", data)
 				.then(function successCallback(response) {
 					self.prediction = []
-					for (var i = 0; i < response.data.suggestions.length; i++) {
+					for (var i = 0; i < response.data.suggestions.length && i < MAX_SUGGESTIONS; i++) {
 						self.prediction.push(self.getHeroByID(response.data.suggestions[i]))
 					}
 			})
@@ -124,6 +126,7 @@
 			for (var i = 0; i < self.list.length; i++) {
 				self.byID[self.list[i].id] = self.list[i]
 			}
+			self.predict()
 		}
 
 		// get the next action (pick/ban + team) represented as an object

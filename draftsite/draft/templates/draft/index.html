@@ -1,7 +1,7 @@
 {% load static %}
 <html ng-app="draftnet">
 <head>
-	<title>Draftnet &middot; Pick</title>
+	<title>Draftnet &middot; Draft</title>
 
 	<script type="text/javascript" src="{% static 'draft/angular/angular.js' %}"></script>
 	<script type="text/javascript" src="{% static 'draft/jquery-3.2.1.min.js' %}"></script>
@@ -36,7 +36,7 @@
 <div id="heroGrid">
 	<img class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'taken' : draftCtrl.isPicked(hero), 'choosing' : draftCtrl.isChoosing(), 'reporting' : !draftCtrl.isChoosing()}" ng-click="draftCtrl.selectHero(hero)">
 </div>
-<div class="button-select-container text-center"><button ng-if="draftCtrl.isValidSelection()" ng-class="{'ban' : !draftCtrl.getNextAction().pick, 'pick' : draftCtrl.getNextAction().pick }" ng-click="draftCtrl.choose()" class="text-uppercase button-select">[[ draftCtrl.getNextActionTitle() ]] [[ draftCtrl.selectedHero.localized_name ]]</button></div>
+<div class="button-choose-container text-center"><button ng-if="draftCtrl.isValidSelection()" ng-class="{'ban' : !draftCtrl.getNextAction().pick, 'pick' : draftCtrl.getNextAction().pick }" ng-click="draftCtrl.choose()" class="text-uppercase button-choose">[[ draftCtrl.getNextActionTitle() ]] [[ draftCtrl.selectedHero.localized_name ]]</button></div>
 </div>
 <!-- TODO should display draft status as well -->
 </body>
