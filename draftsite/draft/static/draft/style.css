@@ -45,16 +45,16 @@ body {
     z-index: -1;
 }
 
-.button-select-container {
+.button-choose-container {
 	margin-top: 20px;
 }
 
-.button-select {
-	font-size: 27px;
+.button-choose {
+	font-size: 25px;
 	border-radius: 2px;
 	border: none;
 	color: white;
-	padding: 4px 35px;
+	padding: 4px 30px;
 	transition: 0.4s;
 }
 
@@ -117,7 +117,7 @@ h3.suggestion-text{
 	background-color: rgba(189, 186, 178, 0.7);
 	width: 40%;
 	color: white;
-	font-size: 20px;
+	font-size: 18px;
 	border: none;
-	padding: 7px 14px;
+	padding: 5px 10px;
 }
