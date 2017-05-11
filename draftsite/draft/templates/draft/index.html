@@ -23,8 +23,8 @@
 	<div class="content-container">
 		<div id="prediction" ng-if="draftCtrl.prediction">
 			<h3 class="suggestion-text">[[ draftCtrl.getSuggestionText() ]]</h3>
-			<span ng-repeat="hero in draftCtrl.prediction">
-				<img class="suggestion" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" />
+			<span >
+				<img class="suggestion" ng-repeat="hero in draftCtrl.prediction" ng-class="{'selected' : draftCtrl.isSelected(hero)}" ng-click="draftCtrl.selectHero(hero)" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" />
 			</span>
 		</div>
 		<div class="spacer" ng-if="!draftCtrl.prediction">

@@ -14,36 +14,33 @@ body {
 	margin-right: 20px;
 }
 
-img.grid {
+.grid {
 	display: inline-block;
 	width: 67px;
 	margin: 4px;
 }
 
-img.grid.filtered {
+.grid.filtered {
 	opacity: 0.5;
 	background-color: black;
 }
 
-img.grid.taken {
+.grid.taken {
 	-webkit-filter: grayscale(100%);
 /*	opacity: 0.9;
 	background-color: black;*/
 }
 
-img.grid.selected {
+.selected {
 	border-color: #00d2ff;
 	box-shadow: 0 0 19px #00d2ff;
 	outline: 2px solid;
 	outline-color: #00d2ff;
 }
 
-img#background {
+#background {
 	position: fixed;
-    left: 0;
-    top: 0;
     width: 100%;
-    height: auto;
     opacity: 0.6;
     z-index: -1;
 }
@@ -83,16 +80,19 @@ img#background {
 
 .reporting {
 	color: red;
-	outline-color: red;
 }
 
 .suggestion{
 	width: 100px;
+	margin: 7px;
+	margin-left: 0px;
+	margin-bottom: 0px;
 }
 
 .suggestion-text{
 	color: white;
 	margin-top: 0px;
+	margin-bottom: 3px;
 }
 
 #topBar {
@@ -120,10 +120,3 @@ img#background {
 	border: none;
 	padding: 9px 18px;
 }
-
-.nextActionText {
-	position: absolute;
-	/*margin-top: -5px;*/
-	left: 100px;
-}
-
