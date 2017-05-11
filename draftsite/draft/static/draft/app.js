@@ -27,7 +27,7 @@
         })
 
 		self.pickCounter = 0
-		const PICK_BAN_ORDER = 	[{"pick": false, "team": 0},  // where the picker is on team 0 (TODO change)
+		const PICK_BAN_ORDER = 	[{"pick": false, "team": 0},  // where team 0 picks first
         						 {"pick": false, "team": 1},
                   				 {"pick": false, "team": 0},
                   				 {"pick": false, "team": 1},
