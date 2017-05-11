@@ -49,8 +49,8 @@
 
 								 {"pick": false, "team": 1},
 								 {"pick": false, "team": 0},
-								 {"pick": true, "team": 1},
-								 {"pick": true, "team": 0}];
+								 {"pick": true, "team": 0},
+								 {"pick": true, "team": 1}];
 
 		var Team = function() {
 			this.picks = []
@@ -62,6 +62,7 @@
 		self.searchFilter = ""
 		self.selectedHero = undefined
 		self.picked = []
+		self.banned = []
 
 		self.inTeam = function(hero, team) {
 			inList = (x, l) => (l.indexOf(x) != -1)
@@ -78,7 +79,11 @@
 		}
 
 		self.selectHero = function(hero) {
-			self.selectedHero = hero
+			if (self.selectedHero == hero) {
+				self.selectedHero = undefined
+			} else {
+				self.selectedHero = hero
+			}
 		}
 
 		self.isSelected = function(hero) {
@@ -86,16 +91,24 @@
 		}
 
 		self.isValidSelection = function() {
-			return self.selectedHero && !self.isPicked(self.selectedHero)
+			return self.selectedHero && !self.isPicked(self.selectedHero) && !self.isBanned(self.selectedHero)
 		}
 
 		self.isPicked = function(hero) {
 			return self.picked.indexOf(hero) != -1
 		}
 
+		self.isBanned = function(hero) {
+			return self.banned.indexOf(hero) != -1
+		}
+
 		self.choose = function() {
 			var pickBan = PICK_BAN_ORDER[self.pickCounter++]
-			self.picked.push(self.selectedHero)
+			if (pickBan.pick) {
+				self.picked.push(self.selectedHero)
+			} else {
+				self.banned.push(self.selectedHero)
+			}			
 			self.teams[pickBan.team][pickBan.pick ? "picks" : "bans"].push(self.selectedHero.id)
 			self.predict(self.getNextAction().team)
 			self.searchFilter = ""
@@ -147,6 +160,12 @@
 			var currentTeam = self.getNextAction().team == 0 ? "You" : "The enemy"
 			var currentAction = self.getNextAction().pick ? "picking" : "banning"
 			return currentTeam + " should consider " + currentAction + ":"
+		}
+
+		self.getTurnText = function() {
+			var currentTeam = self.getNextAction().team == 0 ? "Your" : "Enemy"
+			var currentAction = self.getNextAction().pick ? "pick" : "ban"
+			return currentTeam + " team's turn to " + currentAction
 		}
 
 	});
