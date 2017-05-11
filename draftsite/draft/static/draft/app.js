@@ -104,7 +104,7 @@
 			data = {
 				"team0": self.teams[0],
 				"team1": self.teams[1],
-				"isPick": getNextAction()["pick"]
+				"isPick": self.getNextAction()["pick"]
 			}
 			$http.post("/api/predict/", data)
 				.then(function successCallback(response) {
@@ -127,17 +127,23 @@
 		}
 
 		// get the next action (pick/ban + team) represented as an object
-		getNextAction = function() {
+		self.getNextAction = function() {
 			return PICK_BAN_ORDER[self.pickCounter]
 		}
 
 		// text to go on the button (either "Ban" or "Pick")
 		self.getNextActionTitle = function() {
-			return getNextAction().pick ? "Pick" : "Ban"
+			return self.getNextAction().pick ? "Pick" : "Ban"
 		}
 
 		self.isChoosing = function() {
-			return getNextAction().team == 0
+			return self.getNextAction().team == 0
+		}
+
+		self.getSuggestionText = function() {
+			var currentTeam = self.getNextAction().team == 0 ? "You" : "The enemy"
+			var currentAction = self.getNextAction().pick ? "picking" : "banning"
+			return currentTeam + " should consider " + currentAction + ":"
 		}
 
 	});

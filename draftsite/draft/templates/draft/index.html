@@ -20,21 +20,23 @@
 <body ng-controller="DraftController as draftCtrl">
 <img src="{% static 'draft/images/titan_background.jpg' %}" id="background" />
 <div id="topBar">
-	<span class="nextActionText choosing" ng-if="draftCtrl.isChoosing()">Your turn to <b>[[draftCtrl.getNextActionTitle().toLowerCase()]]</b></span>
-	<span class="nextActionText reporting" ng-if="!draftCtrl.isChoosing()">Enemy's turn to <b>[[draftCtrl.getNextActionTitle().toLowerCase()]]</b></span>
-	<input type="text" id="filter" class="form-control" ng-model="draftCtrl.searchFilter" />
-	<span id="selector" ng-if="draftCtrl.isValidSelection()">
-		<button ng-click="draftCtrl.choose()" class="btn btn-primary">[[ draftCtrl.getNextActionTitle() ]]</button>
-	</span>
+	<div class="content-container">
+		<div id="prediction" ng-if="draftCtrl.prediction">
+			<h3 class="suggestion-text">[[ draftCtrl.getSuggestionText() ]]</h3>
+			<span ng-repeat="hero in draftCtrl.prediction">
+				<img class="suggestion" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" />
+			</span>
+		</div>
+		<div class="spacer" ng-if="!draftCtrl.prediction">
+		</div>
+	</div>
 </div>
+<div class="content-container">
+<div class="text-center search-container"><input type="text" id="search" ng-model="draftCtrl.searchFilter" placeholder="Search heroes..." /></div>
 <div id="heroGrid">
 	<img class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'taken' : draftCtrl.isPicked(hero), 'choosing' : draftCtrl.isChoosing(), 'reporting' : !draftCtrl.isChoosing()}" ng-click="draftCtrl.selectHero(hero)">
 </div>
-<div id="prediction" ng-if="draftCtrl.prediction">
-	<h2>Suggestions</h2>
-	<span ng-repeat="hero in draftCtrl.prediction">
-		<img class="suggestion" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" />
-	</span>
+<div class="button-select-container text-center"><button ng-if="draftCtrl.isValidSelection()" ng-class="{'ban' : !draftCtrl.getNextAction().pick, 'pick' : draftCtrl.getNextAction().pick }" ng-click="draftCtrl.choose()" class="text-uppercase button-select">[[ draftCtrl.getNextActionTitle() ]] [[ draftCtrl.selectedHero.localized_name ]]</button></div>
 </div>
 <!-- TODO should display draft status as well -->
 </body>

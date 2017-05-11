@@ -1,7 +1,22 @@
+@font-face {
+	font-family: 'Radiance';
+	src: url('fonts/Radiance.ttf') format('truetype');
+	font-style: normal;
+}
+
+body {
+	font-family: 'Radiance';
+	background: black;
+}
+
+.content-container {
+	margin-left: 20px;
+	margin-right: 20px;
+}
+
 img.grid {
 	display: inline-block;
-	width: 63;
-	height: 36;
+	width: 67px;
 	margin: 4px;
 }
 
@@ -17,12 +32,14 @@ img.grid.taken {
 }
 
 img.grid.selected {
+	border-color: #00d2ff;
+	box-shadow: 0 0 19px #00d2ff;
 	outline: 2px solid;
-	opacity: 1.0;
+	outline-color: #00d2ff;
 }
 
 img#background {
-	position: absolute;
+	position: fixed;
     left: 0;
     top: 0;
     width: 100%;
@@ -31,9 +48,37 @@ img#background {
     z-index: -1;
 }
 
+.button-select-container {
+	margin-top: 20px;
+}
+
+.button-select {
+	font-size: 27px;
+	border-radius: 2px;
+	border: none;
+	color: white;
+	padding: 4px 35px;
+	transition: 0.4s;
+}
+
+.pick {
+	background: linear-gradient(to right, #47688A, #29374C);
+}
+
+.pick:hover {
+	box-shadow: 0 0 19px #4493E4;
+}
+
+.ban {
+	background: linear-gradient(to right, #90414e, #4f2629);
+}
+
+.ban:hover {
+	box-shadow: 0 0 19px #d43e56;
+}
+
 .choosing {
 	color: green;
-	outline-color: green;
 }
 
 .reporting {
@@ -41,29 +86,39 @@ img#background {
 	outline-color: red;
 }
 
-div#topBar {
-	width: 100%;
-	padding: 20px 20px 20px 20px;
-	position: relative;
-	margin-bottom: 30px;
-	height: 60px;
-	top: 0;
-	right: 0;
-	opacity: 0.85;
-	/*margin-bottom: 30px;*/
-	background-image: linear-gradient(135deg,#2e2d45,#1c2127);
-	background-color: rgba(0,0,0,.4)!important;
+.suggestion{
+	width: 100px;
 }
 
-input#filter {
-	display: inline-block;
-	height: 30px;
-	margin-top: -5px;
-	width: 200px;
-	position: absolute;
-	left: 400px;
-	background-image: linear-gradient(135deg,#2e2d45,#1c2127);
-	border-color: #1c2127;
+.suggestion-text{
+	color: white;
+	margin-top: 0px;
+}
+
+#topBar {
+	width: 100%;
+	margin-bottom: 30px;
+	opacity: 0.85;
+	background-color: #2e2d45;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+.spacer {
+	height: 92px;
+}
+.search-container {
+	margin-bottom: 15px;
+}
+
+#search {
+	border-radius: 5px;
+	background-color: rgba(189, 186, 178, 0.7);
+	width: 40%;
+	color: white;
+	font-size: 24px;
+	border: none;
+	padding: 9px 18px;
 }
 
 .nextActionText {
@@ -72,7 +127,3 @@ input#filter {
 	left: 100px;
 }
 
-body {
-	font-family: "Lucida Grande", Tahoma, Verdana, Arial, sans-serif;
-	background-color: black;
-}
