@@ -9,6 +9,10 @@ body {
 	background: black;
 }
 
+.row {
+	margin-right: 0px;
+}
+
 .content-container {
 	margin-left: 20px;
 	margin-right: 20px;
@@ -90,12 +94,23 @@ body {
 	box-shadow: 0 0 19px #d43e56;
 }
 
-.choosing {
-	color: green;
+.player {
+	color: #22d722 !important;
+	
+	transition: 0.4s;
 }
 
-.reporting {
-	color: red;
+.player.turn {
+	text-shadow: #18e418 0 0 12px;
+}
+
+.enemy {
+	color: #f01b1b !important;
+	transition: 0.4s;
+}
+
+.enemy.turn {
+	text-shadow: red 0 0 12px;
 }
 
 .suggestion{
@@ -113,8 +128,12 @@ h3.suggestion-text{
 	margin-bottom: 3px;
 }
 
+
 #topBar {
 	margin-bottom: 20px;
+}
+
+.bar {
 	opacity: 0.85;
 	background-color: #2e2d45;
 	padding-top: 15px;
@@ -123,8 +142,52 @@ h3.suggestion-text{
 	align-items: center;
 }
 
+#bottomBar {
+	margin-top: 50px;
+}
+
+.pick-slot {
+	display: inline-block;
+	width: 94px;
+	height: 55px;
+	border-style: solid;
+	border-width: 3px;
+	border-color: rgb(67, 67, 96);
+	border-radius: 5px;
+	background-color: rgb(40, 40, 50);
+	margin: 12px 3px;
+	margin-bottom: 5px;
+	position: relative;
+}
+
+.hero-picked {
+	width: 94px;
+	border-radius: 5px;
+	display: inline-block;
+}
+
+.ban-slot {
+	display: inline-block;
+	width: 64px;
+	height: 38px;
+	border-style: solid;
+	border-width: 3px;
+	border-color: rgb(67, 67, 96);
+	border-radius: 5px;
+	background-color: rgb(40, 40, 50);
+	margin: 2px;
+	position: relative;
+}
+
+.selection {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	border-radius: 5px;
+}
+
 .spacer {
-	height: 92px;
+	height: 44px;
 }
 
 .prediction {

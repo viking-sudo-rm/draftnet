@@ -134,6 +134,14 @@
 			return self.byID[id]
 		}
 
+		self.getPick = function(team, index){
+			return self.getHeroByID(self.teams[team].picks[index])
+		}
+
+		self.getBan = function(team, index){
+			return self.getHeroByID(self.teams[team].bans[index])
+		}
+
 		self.loadHeroes = function() {
 			self.byID = {}
 			for (var i = 0; i < self.list.length; i++) {
