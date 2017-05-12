@@ -134,6 +134,14 @@
 			return self.byID[id]
 		}
 
+		self.getPick = function(team, index){
+			return self.getHeroByID(self.teams[team].picks[index])
+		}
+
+		self.getBan = function(team, index){
+			return self.getHeroByID(self.teams[team].bans[index])
+		}
+
 		self.loadHeroes = function() {
 			self.byID = {}
 			for (var i = 0; i < self.list.length; i++) {
@@ -163,9 +171,9 @@
 		}
 
 		self.getTurnText = function() {
-			var currentTeam = self.getNextAction().team == 0 ? "Your" : "Enemy"
+			var currentTeam = self.getNextAction().team == 0 ? "Your" : "Enemy's"
 			var currentAction = self.getNextAction().pick ? "pick" : "ban"
-			return currentTeam + " team's turn to " + currentAction
+			return currentTeam + " turn to " + currentAction
 		}
 
 	});
