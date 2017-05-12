@@ -27,7 +27,7 @@
         })
 
 		self.pickCounter = 0
-		const PICK_BAN_ORDER = 	[{"pick": false, "team": 0},  // where the picker is on team 0 (TODO change)
+		const PICK_BAN_ORDER = 	[{"pick": false, "team": 0},  // where team 0 picks first
         						 {"pick": false, "team": 1},
                   				 {"pick": false, "team": 0},
                   				 {"pick": false, "team": 1},
@@ -171,9 +171,9 @@
 		}
 
 		self.getTurnText = function() {
-			var currentTeam = self.getNextAction().team == 0 ? "Your" : "Enemy"
+			var currentTeam = self.getNextAction().team == 0 ? "Your" : "Enemy's"
 			var currentAction = self.getNextAction().pick ? "pick" : "ban"
-			return currentTeam + " team's turn to " + currentAction
+			return currentTeam + " turn to " + currentAction
 		}
 
 	});
