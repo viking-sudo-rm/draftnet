@@ -165,13 +165,13 @@
 		}
 
 		self.getSuggestionText = function() {
-			var currentTeam = self.getNextAction().team == 0 ? "You" : "The enemy"
+			var currentTeam = self.getNextAction().team == 0 ? "Team A" : "Team B"
 			var currentAction = self.getNextAction().pick ? "picking" : "banning"
 			return currentTeam + " should consider " + currentAction + ":"
 		}
 
 		self.getTurnText = function() {
-			var currentTeam = self.getNextAction().team == 0 ? "Your" : "Enemy's"
+			var currentTeam = self.getNextAction().team == 0 ? "Team A's" : "Team B's"
 			var currentAction = self.getNextAction().pick ? "pick" : "ban"
 			return currentTeam + " turn to " + currentAction
 		}

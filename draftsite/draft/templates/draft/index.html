@@ -44,7 +44,7 @@
 <div id="bottomBar" class="bar row">
 
 	<div class="text-center col-md-5 col-md-offset-1">
-		<h3 class="suggestion-text player text-uppercase" ng-class="{'turn' : draftCtrl.isChoosing() }">Your Team</h3>
+		<h3 class="suggestion-text player text-uppercase" ng-class="{'turn' : draftCtrl.isChoosing() }">Team A</h3>
 		<div class="row">
 			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,0)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(0,0).name ]].png" ></div>
 			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,1)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(0,1).name ]].png" ></div>
@@ -61,7 +61,7 @@
 		</div>
 	</div>
 	<div class="text-center col-md-5">
-		<h3 class="suggestion-text enemy text-uppercase" ng-class="{'turn' : !draftCtrl.isChoosing() }">Enemy Team</h3>
+		<h3 class="suggestion-text enemy text-uppercase" ng-class="{'turn' : !draftCtrl.isChoosing() }">Team B</h3>
 		<div class="row">
 			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,0)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(1,0).name ]].png" ></div>
 			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,1)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(1,1).name ]].png" ></div>
