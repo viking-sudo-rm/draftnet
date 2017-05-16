@@ -23,8 +23,8 @@ urlpatterns = [
 ]
 
 # perhaps this is dangerous?
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+# from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-# ... the rest of your URLconf goes here ...
+# # ... the rest of your URLconf goes here ...
 
-urlpatterns += staticfiles_urlpatterns()
+# urlpatterns += staticfiles_urlpatterns()
