@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 ]
 
-perhaps this is dangerous?
+# perhaps this is dangerous?
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 # ... the rest of your URLconf goes here ...
