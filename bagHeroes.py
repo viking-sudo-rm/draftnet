@@ -8,12 +8,12 @@ M = 50
 LEARNING_RATE = 0.01
 
 BATCH_SIZE = 100
-NUM_BATCHES = 1000000 # this number controls how long the program trains
+NUM_BATCHES = 100000 # this number controls how long the program trains
 EPOCHS = 100
 
 # takes very close to 2^n iterations to reduce loss by one place with NUM_BATCHES = 1000000 and LEARNING_RATE = 0.0001
 
-PICK_THRESHOLD = 0.35
+PICK_THRESHOLD = 0.1 #0.35
 
 # create our nodes for the graph.
 
@@ -35,6 +35,7 @@ Y_ = tf.nn.softmax(y0)                                # probability distribution
 
 # define loss function:
 
+# TODO can simplify this part since we know one distribution is one-hot
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y0, labels=Y, name='cross_entropy')
 train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(cross_entropy)
 
@@ -43,7 +44,9 @@ def parseDraftnetArgs():
     argparser = argparse.ArgumentParser(description="Set train and test files.")
     argparser.add_argument('--train', help='path to train file', default='data/train-36740.json')
     argparser.add_argument('--test', help='path to test file', default='data/test-5000.json')
-    argparser.add_argument('--model', help='path to model file', default='results/bag-100-1000000-0.01-50.ckpt')
+    argparser.add_argument('--save', help='path to save model', default="results/bag-{}-{}-{}-{}.ckpt".format(BATCH_SIZE, NUM_BATCHES, LEARNING_RATE, M))
+    argparser.add_argument('--model', help='path to model file', default=None)
+    # argparser.add_argument('--threshold', help='thresold for deciding pick set membership', default=0)
     return argparser.parse_args()
 
 flatten = lambda l: [item for sublist in l for item in sublist]
@@ -70,19 +73,19 @@ def format(game):
             a = team0.getContextVector() + team1.getContextVector() + [is_pick_bit]
             output.append((a, getOneHot(picks_bans[i])))
             if picks_bans[i]['is_pick']:
-                team0.pick(Hero.byID(hero_id))
+                team0.pick(APIHero.byID(hero_id))
             else:
-                team0.ban(Hero.byID(hero_id))
+                team0.ban(APIHero.byID(hero_id))
         else: # don't append to output, but pick the hero
             if picks_bans[i]['is_pick']:
-                team1.pick(Hero.byID(hero_id))
+                team1.pick(APIHero.byID(hero_id))
             else:
-                team1.ban(Hero.byID(hero_id))
+                team1.ban(APIHero.byID(hero_id))
 
     return output
 
 def getNames(picks):
-    return [Hero.byID(pick).getName() for pick in picks]
+    return [APIHero.byID(pick).getName() for pick in picks]
 
 def getContext(team0, team1, isPick):
     return team0.getContextVector() + team1.getContextVector() + [1 if isPick else 0]
@@ -143,26 +146,31 @@ if __name__ == "__main__":
         session.run(tf.global_variables_initializer())
         saver = tf.train.Saver()
 
-        print("reading training data..")
-        train = [game for game in json.load(open(args.train, "r")) if len(game["picks_bans"]) == 20]
-        print("building trials..")
-        trials = flatten([format(game) for game in train])
+        if not args.model:
 
-        print("starting training..")
-        for i in range(EPOCHS):
+            print("reading training data..")
+            train = [game for game in json.load(open(args.train, "r")) if len(game["picks_bans"]) == 20]
+            print("building trials..")
+            trials = flatten([format(game) for game in train])
 
-            epochLoss = 0.0
+            print("starting training..")
+            for i in range(EPOCHS):
 
-            for _ in range(NUM_BATCHES // EPOCHS):
-                x, y = zip(*random.sample(trials, BATCH_SIZE))
-                epochLoss += session.run([cross_entropy, train_step], feed_dict={X: x, Y: y})[0]
+                epochLoss = 0.0
 
-            # increasing batch size increases error -- perhaps we should adjust something in the optimization
+                for _ in range(NUM_BATCHES // EPOCHS):
+                    x, y = zip(*random.sample(trials, BATCH_SIZE))
+                    epochLoss += session.run([cross_entropy, train_step], feed_dict={X: x, Y: y})[0]
 
-            print("epoch", i, "loss:", '{:.2f}'.format(sum(epochLoss)))
+                # increasing batch size increases error -- perhaps we should adjust something in the optimization
 
-        save_path = saver.save(session, "results/bag-{}-{}-{}-{}.ckpt".format(BATCH_SIZE, NUM_BATCHES, LEARNING_RATE, M))
-        print("saved session to", save_path)
+                print("epoch", i, "loss:", '{:.2f}'.format(sum(epochLoss)))
+
+            save_path = saver.save(session, args.save)
+            print("saved session to", save_path)
+
+        else:
+            saver.restore(session, args.model)
 
         print("reading testing data..")
         test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]

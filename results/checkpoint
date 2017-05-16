@@ -1,2 +1,2 @@
-model_checkpoint_path: "bag-100-1000000-0.01-50.ckpt"
-all_model_checkpoint_paths: "bag-100-1000000-0.01-50.ckpt"
+model_checkpoint_path: "pro-smaller-7.00.ckpt"
+all_model_checkpoint_paths: "pro-smaller-7.00.ckpt"
