@@ -7,12 +7,12 @@ from django.core import serializers
 import json, sys
 
 # TODO there's probably a better way to do this with an environment variable
-sys.path.insert(0,'..')
+# sys.path.insert(0,'..')
 from bagHeroes import *
 from .models import Hero
 
-# MODEL = "../results/bag-100-1000000-0.01-50.ckpt"
-MODEL = "../results/pro-smaller-7.00.ckpt"
+# MODEL = "results/bag-100-1000000-0.01-50.ckpt"
+MODEL = "results/pro-smaller-7.00.ckpt"
 
 with session.as_default():
     saver = tf.train.Saver()
