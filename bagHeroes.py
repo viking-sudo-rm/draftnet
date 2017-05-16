@@ -4,7 +4,7 @@ import numpy as np
 import argparse, json, random
 from util import *
 
-M = 50
+M = 50 #TODO try changing M and see if it improves results?
 LEARNING_RATE = 0.01
 
 BATCH_SIZE = 100
