@@ -1,1 +1,1 @@
-web: python draftsite/manage.py runserver
+web: python manage.py runserver
