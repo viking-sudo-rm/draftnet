@@ -39,7 +39,7 @@ def predict(request):
 	if not team0 or not team1:
 		return JsonResponse(None, safe=False)
 
-	context = getContext(team0, team1, isPick)
+	context = getContext(team0, team1, isPick, args["side"])
 	distribution = getDistribution(context, session)
 	suggestions = getSuggestions(distribution, getNotAllowed(context))
 

@@ -23,7 +23,7 @@
 				    self.list = response.data
 				    self.loadHeroes()
 		}, function(data) {
-                console.log('Error: ' + data);
+            console.log('Error: ' + data);
         })
 
 		self.pickCounter = 0
@@ -55,6 +55,7 @@
 		var Team = function() {
 			this.picks = []
 			this.bans = []
+			this.side = 0
 		}
 
 		self.teams = [new Team(), new Team()]
@@ -119,6 +120,7 @@
 			data = {
 				"team0": team == 0 ? self.teams[0] : self.teams[1],
 				"team1": team == 0 ? self.teams[1] : self.teams[0],
+				"side": team == 0 ? self.teams[0].side : self.teams[1].side,
 				"isPick": self.getNextAction()["pick"]
 			}
 			$http.post("/api/predict/", data)

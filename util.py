@@ -123,10 +123,6 @@ class Team:
         return self.pickVector + self.banVector
 
     @staticmethod
-    def getContextVectorFor(team0, team1, pickBit):
-        team0.getContextVector() + team1.getContextVector() + [pickBit]
-
-    @staticmethod
     def fromJSON(json):
       t = Team()
       for pick in json["picks"]: t.pick(APIHero.byID(pick))
