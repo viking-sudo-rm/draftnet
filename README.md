@@ -22,7 +22,7 @@ You can find an easy-to-use web interface for Draftnet at http://draftnet.heroku
 Our Python implementation of draftnet requires the [Tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed Tensorflow and cloned our repository, you can train our feed-forward network with `bagHeroes.py`. For example:
 
 ~~~~
-python bagHeroes.py --train train/pro-7.00.json --test test/pro-7.00.json --save results/model.ckpt
+python bagHeroes.py --train train/pro-7.00.json --test test/pro-7.00.json --save results/customModel.ckpt
 ~~~~
 
 Train and test files contain the results of Dota 2 games fetched from the OpenDota API. You can find some provided training and testing data in the `data` folder. You can type `python bagHeroes.py --help` to see a full list of run options.
