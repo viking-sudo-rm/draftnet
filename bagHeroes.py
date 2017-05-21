@@ -15,23 +15,23 @@ EPOCHS = 100
 
 PICK_THRESHOLD = 0.1 #0.35
 
-class DraftGraph:
+class DraftGraph(object):
 
     # we can give this class parameters so it's easy to construct different types of graphs with slight differences
 
-    def __init__(self, logitsX=4*N+1, logitsHidden=M):
+    def __init__(self, logitsX, logitsY, logitsHidden=M):
 
         # create our nodes for the graph.
 
         self.X = tf.placeholder(dtype=tf.float32, shape=[None, logitsX])
-        self.Y = tf.placeholder(dtype=tf.float32, shape=[None, N])
+        self.Y = tf.placeholder(dtype=tf.float32, shape=[None, logitsY])
 
         # define the matrices (weights)
 
         self.W_1 = tf.Variable(tf.random_uniform([4*N+1, logitsHidden], -1.0, 1.0), name='W1')
         self.b_1 = tf.Variable(tf.zeros([1, logitsHidden]), name='b1')
-        self.W_2 = tf.Variable(tf.random_uniform([logitsHidden, N], -1.0, 1.0), name='W2')
-        self.b_2 = tf.Variable(tf.zeros([1, N]), name='b2')
+        self.W_2 = tf.Variable(tf.random_uniform([logitsHidden, logitsY], -1.0, 1.0), name='W2')
+        self.b_2 = tf.Variable(tf.zeros([1, logitsY]), name='b2')
 
         # define operations
 
@@ -44,6 +44,16 @@ class DraftGraph:
         # TODO can simplify this part since we know one distribution is one-hot
         self.cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.y0, labels=self.Y, name='cross_entropy')
         self.train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(self.cross_entropy)
+
+class NextHeroGraph(DraftGraph):
+
+    def __init__(self):
+        super(NextHeroGraph, self).__init__(logitsX=4*N+1, logitsY=N)
+
+class WinGraph(DraftGraph):
+    
+    def __init__(self):
+        super(WinGraph, self).__init__(logitsX=2*N, logitsY=1)
 
 # need this to avoid issues when importing something using argparser
 def parseDraftnetArgs():
@@ -146,7 +156,7 @@ def testInSession(test, session, graph, PICK_THRESHOLD=PICK_THRESHOLD):
 if __name__ == "__main__":
 
     args = parseDraftnetArgs()
-    graph = DraftGraph()
+    graph = NextHeroGraph()
 
     with tf.Session() as session:
 
@@ -171,7 +181,7 @@ if __name__ == "__main__":
 
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
 
-                print("epoch", i, "loss:", '{:.2f}'.format(sum(epochLoss)))
+                print("average", i, "loss:", '{:.2f}'.format(sum(epochLoss) / (args.batches // EPOCHS) / BATCH_SIZE))
 
             save_path = saver.save(session, args.save)
             print("saved session to", save_path)
@@ -185,5 +195,5 @@ if __name__ == "__main__":
 
 else:
 
-    graph = DraftGraph()
+    graph = NextHeroGraph()
     session = tf.Session() # session for others to use
