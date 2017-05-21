@@ -1,18 +1,15 @@
 # Draftnet
-A neural net approach to Dota 2 drafting
-
-## What Draftnet does
 
 [Dota 2](http://blog.dota2.com/?l=english) is a very popular video game played competitively as an eSport.
 An important part of every Dota 2 game is the draft: the phase during which each team of five players picks what 
 characters (heroes) they want to play with.
 
-This may sound simple, but drafting well is deceptively complicated. In Dota, each hero has a unique set of abilities. The unique interaction of a hero’s abilities with those of its 
+This may sound simple, but drafting well is deceptively complicated. Each Dota hero has a unique set of abilities, and the  specific interaction of one hero’s abilities with those of its 
 teammates might allow for an awesome combination play. Similarly, another ability might completely mitigate the 
 destructive potential of the enemy team. Among professional Dota players, drafting is complicated artform that decides the fate of million-dollar games.
 
-Draftnet learns how to draft well by analyzing thousands of successful drafts by professional Dota players. These games
-are read from the [OpenDota](https://www.opendota.com/) API, and then used to train a neural network that makes drafting decisions.
+Draftnet learns how to draft well by analyzing thousands of winning drafts by professional Dota players. These games
+are read from the [OpenDota](https://www.opendota.com/) API, and then used to train a feed-forward neural network that makes drafting decisions.
 
 ## Using the Draftnet web interface
 You can find an easy-to-use web interface for Draftnet at http://draftnet.herokuapp.com/. The website is designed so that you can have it open in a secondary monitor or tab while you are picking a Dota 2 draft. Because of temporary limitations on the OpenDota API, the network currently only predicts picks and bans for Captain's Mode games.
