@@ -17,7 +17,7 @@ are read from the [OpenDota](https://www.opendota.com/) API, and then used to tr
 ## Using the Draftnet web interface
 You can find an easy-to-use web interface for Draftnet at http://draftnet.herokuapp.com/. The website is designed so that you can have it open in a secondary monitor or tab while you are picking a Dota 2 draft. Because of temporary limitations on the OpenDota API, the network currently only predicts picks and bans for Captain's Mode games.
 
-## Running our source-code
+## Running the Draftnet source code
 
 Our Python implementation of draftnet requires the [Tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed Tensorflow and cloned our repository, you can train our feed-forward network with `bagHeroes.py`. For example:
 
