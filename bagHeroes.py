@@ -37,7 +37,7 @@ class DraftGraph(object):
 
         self.h = tf.sigmoid(tf.add(tf.matmul(self.X, self.W_1), self.b_1))     # creates the embedded game information.
         self.y0 = tf.add(tf.matmul(self.h, self.W_2), self.b_2)
-        self.Y_ = tf.nn.softmax(self.y0)                                # probability distribution of next hero.
+        self.Y_ = tf.nn.softmax(self.y0)                                # predicted probability distribution of next hero.
 
         # define loss function:
 
@@ -51,7 +51,7 @@ class NextHeroGraph(DraftGraph):
         super(NextHeroGraph, self).__init__(logitsX=4*N+1, logitsY=N)
 
 class WinGraph(DraftGraph):
-    
+
     def __init__(self):
         super(WinGraph, self).__init__(logitsX=2*N, logitsY=1)
 
