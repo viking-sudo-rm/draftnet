@@ -130,6 +130,7 @@ h3.suggestion-text{
 
 
 #topBar {
+	min-height: 71px;
 	margin-bottom: 20px;
 }
 

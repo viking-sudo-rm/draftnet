@@ -53,8 +53,14 @@
 								 {"pick": true, "team": 1}];
 
 		var Team = function() {
+
 			this.picks = []
 			this.bans = []
+
+			this.isFull = function() {
+				return this.picks.length == 5
+			}
+
 		}
 
 		self.teams = [new Team(), new Team()]
@@ -116,6 +122,12 @@
 
 		// pass the team you are predicting for
 		self.predict = function(team = 0) {
+
+			if (self.draftIsDone()) {
+				self.prediction = undefined
+				return
+			}
+
 			data = {
 				"team0": team == 0 ? self.teams[0] : self.teams[1],
 				"team1": team == 0 ? self.teams[1] : self.teams[0],
@@ -165,6 +177,11 @@
 		}
 
 		self.getSuggestionText = function() {
+
+			if (self.draftIsDone()) {
+				return undefined
+			}
+
 			var currentTeam = self.getNextAction().team == 0 ? "Team A" : "Team B"
 			var currentAction = self.getNextAction().pick ? "picking" : "banning"
 			return currentTeam + " should consider " + currentAction + ":"
@@ -174,6 +191,10 @@
 			var currentTeam = self.getNextAction().team == 0 ? "Team A's" : "Team B's"
 			var currentAction = self.getNextAction().pick ? "pick" : "ban"
 			return currentTeam + " turn to " + currentAction
+		}
+
+		self.draftIsDone = function() {
+			return self.teams[0].isFull() && self.teams[1].isFull()
 		}
 
 	});
