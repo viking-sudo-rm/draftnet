@@ -181,7 +181,7 @@ if __name__ == "__main__":
 
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
 
-                print("average", i, "loss:", '{:.2f}'.format(sum(epochLoss) / (args.batches // EPOCHS) / BATCH_SIZE))
+                print("epoch", i, "mean cross-entropy:", '{:.2f}'.format(sum(epochLoss) / (args.batches // EPOCHS) / BATCH_SIZE))
 
             save_path = saver.save(session, args.save)
             print("saved session to", save_path)
