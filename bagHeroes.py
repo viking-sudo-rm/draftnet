@@ -15,29 +15,35 @@ EPOCHS = 100
 
 PICK_THRESHOLD = 0.1 #0.35
 
-# create our nodes for the graph.
+class DraftGraph:
 
-X = tf.placeholder(dtype=tf.float32, shape=[None, 4*N+1])
-Y = tf.placeholder(dtype=tf.float32, shape=[None, N])
+    # we can give this class parameters so it's easy to construct different types of graphs with slight differences
 
-# define the matrices (weights)
+    def __init__(self, logitsX=4*N+1, logitsHidden=M):
 
-W_1 = tf.Variable(tf.random_uniform([4*N+1, M], -1.0, 1.0), name='W1')
-b_1 = tf.Variable(tf.zeros([1, M]), name='b1')
-W_2 = tf.Variable(tf.random_uniform([M, N], -1.0, 1.0), name='W2')
-b_2 = tf.Variable(tf.zeros([1, N]), name='b2')
+        # create our nodes for the graph.
 
-# define operations
+        self.X = tf.placeholder(dtype=tf.float32, shape=[None, logitsX])
+        self.Y = tf.placeholder(dtype=tf.float32, shape=[None, N])
 
-h = tf.sigmoid(tf.add(tf.matmul(X, W_1), b_1))     # creates the embedded game information.
-y0 = tf.add(tf.matmul(h, W_2), b_2)
-Y_ = tf.nn.softmax(y0)                                # probability distribution of next hero.
+        # define the matrices (weights)
 
-# define loss function:
+        self.W_1 = tf.Variable(tf.random_uniform([4*N+1, logitsHidden], -1.0, 1.0), name='W1')
+        self.b_1 = tf.Variable(tf.zeros([1, logitsHidden]), name='b1')
+        self.W_2 = tf.Variable(tf.random_uniform([logitsHidden, N], -1.0, 1.0), name='W2')
+        self.b_2 = tf.Variable(tf.zeros([1, N]), name='b2')
 
-# TODO can simplify this part since we know one distribution is one-hot
-cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y0, labels=Y, name='cross_entropy')
-train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(cross_entropy)
+        # define operations
+
+        self.h = tf.sigmoid(tf.add(tf.matmul(self.X, self.W_1), self.b_1))     # creates the embedded game information.
+        self.y0 = tf.add(tf.matmul(self.h, self.W_2), self.b_2)
+        self.Y_ = tf.nn.softmax(self.y0)                                # probability distribution of next hero.
+
+        # define loss function:
+
+        # TODO can simplify this part since we know one distribution is one-hot
+        self.cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.y0, labels=self.Y, name='cross_entropy')
+        self.train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(self.cross_entropy)
 
 # need this to avoid issues when importing something using argparser
 def parseDraftnetArgs():
@@ -91,8 +97,8 @@ def getNames(picks):
 def getContext(team0, team1, isPick):
     return team0.getContextVector() + team1.getContextVector() + [1 if isPick else 0]
 
-def getDistribution(context, session):
-    return session.run(Y_, feed_dict={X: [context]})[0]
+def getDistribution(context, session, graph):
+    return session.run(graph.Y_, feed_dict={graph.X: [context]})[0]
 
 # collapse a context list x into a flag-set of non-allowable heroes
 def getNotAllowed(context):
@@ -120,14 +126,13 @@ def getSuggestions(distribution, notAllowed, PICK_THRESHOLD=PICK_THRESHOLD):
     # return the picks from greatest to least probability
     return sorted(picks, key=lambda i: 1 - distribution[i])
 
-def testInSession(test, session, PICK_THRESHOLD=PICK_THRESHOLD):
+def testInSession(test, session, graph, PICK_THRESHOLD=PICK_THRESHOLD):
     print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
     counts = [0.0] * 10
     neighborhood_sizes = [0.0] * 10
     for game in test:
         x, y = zip(*format(game))
-        distributions = session.run(Y_, feed_dict={X: x, Y: y})
-        #TODO change this to be 
+        distributions = session.run(graph.Y_, feed_dict={graph.X: x, graph.Y: y})
         for i, distribution in enumerate(distributions):
             notAllowed = getNotAllowed(x[i])
             picks = getSuggestions(distribution, notAllowed, PICK_THRESHOLD=PICK_THRESHOLD)
@@ -141,6 +146,7 @@ def testInSession(test, session, PICK_THRESHOLD=PICK_THRESHOLD):
 if __name__ == "__main__":
 
     args = parseDraftnetArgs()
+    graph = DraftGraph()
 
     with tf.Session() as session:
 
@@ -161,7 +167,7 @@ if __name__ == "__main__":
 
                 for _ in range(args.batches // EPOCHS):
                     x, y = zip(*random.sample(trials, BATCH_SIZE))
-                    epochLoss += session.run([cross_entropy, train_step], feed_dict={X: x, Y: y})[0]
+                    epochLoss += session.run([graph.cross_entropy, graph.train_step], feed_dict={graph.X: x, graph.Y: y})[0]
 
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
 
@@ -175,8 +181,9 @@ if __name__ == "__main__":
 
         print("reading testing data..")
         test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
-        testInSession(test, session)
+        testInSession(test, session, graph)
 
 else:
 
+    graph = DraftGraph()
     session = tf.Session() # session for others to use

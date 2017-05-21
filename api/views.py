@@ -40,7 +40,7 @@ def predict(request):
 		return JsonResponse(None, safe=False)
 
 	context = getContext(team0, team1, isPick)
-	distribution = getDistribution(context, session)
+	distribution = getDistribution(context, session, graph)
 	suggestions = getSuggestions(distribution, getNotAllowed(context))
 
 	return JsonResponse({	"distribution": [float(d) for d in distribution],
