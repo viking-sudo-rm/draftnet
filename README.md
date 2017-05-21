@@ -14,10 +14,10 @@ destructive potential of the enemy team. Among professional Dota players, drafti
 Draftnet learns how to draft well by analyzing thousands of successful drafts by professional Dota players. These games
 are read from the [OpenDota](https://www.opendota.com/) API, and then used to train a neural network that makes drafting decisions.
 
-## How to use
-You can find the Draftnet web interface at http://draftnet.herokuapp.com/.
+## Using the Draftnet web interface
+You can find an easy-to-use web interface for Draftnet at http://draftnet.herokuapp.com/. The website is designed so that you can have it open in a secondary monitor or tab while you are picking a Dota 2 draft. Because of temporary limitations on the OpenDota API, the network currently only predicts picks and bans for Captain's Mode games.
 
-## Using our source-code
+## Running our source-code
 
 Our Python implementation of draftnet requires the [Tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed Tensorflow and cloned our repository, you can train our feed-forward network by running
 
