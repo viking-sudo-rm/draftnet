@@ -19,7 +19,7 @@ You can find an easy-to-use web interface for Draftnet at http://draftnet.heroku
 
 ## Running the Draftnet source code
 
-Our Python implementation of draftnet requires the [Tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed Tensorflow and cloned our repository, you can train our feed-forward network with `bagHeroes.py`. For example:
+Our Python implementation of Draftnet requires the [Tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed Tensorflow and cloned our repository, you can train our feed-forward network with `bagHeroes.py`. For example:
 
 ~~~~
 python bagHeroes.py --train train/pro-7.00.json --test test/pro-7.00.json --save results/customModel.ckpt
@@ -29,7 +29,7 @@ Train and test files contain the results of Dota 2 games fetched from the OpenDo
 
 ## How Draftnet works
 
-Draftnet uses a "bag-of-heroes" architecture inspired by feed-forward neural networks that learn vector semantics for words given a corpus of text. The network takes as input four sets of heroes (the picks and bans on each team) and one bit that encodes whether the next draft action is a pick or ban. Via logistic regression, these inputs feed into a hidden layer with ~50 bits, which in turn feeds into a final output layer with 113 bits (corresponding to the number of heroes in Dota). The softmax of this output layer is interpretted as a probability distribution for the next pick or ban. During training, the weights and biases are then updated using gradient descent. The loss function in this optimization is the cross entropy between the network's predicted distribution and the one hot distribution encoding the actual pick or ban.
+Draftnet uses a "bag-of-heroes" architecture inspired by feed-forward neural networks like Word2Vec that learn vector semantics for words. The network takes as input four sets of heroes (the picks and bans on each team) and one bit that encodes whether the next draft action is a pick or ban. Via logistic regression, these inputs feed into a hidden layer with ~50 bits, which in turn feeds into a final output layer with 113 bits (corresponding to the number of heroes in Dota). The softmax of this output layer is interpretted as a probability distribution for the next pick or ban. During training, the weights and biases are then updated using gradient descent. The loss function in this optimization is the cross entropy between the network's predicted distribution and the one hot distribution encoding the actual pick or ban.
 
 ## Hero embeddings
 
