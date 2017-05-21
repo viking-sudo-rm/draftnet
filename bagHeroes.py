@@ -8,7 +8,7 @@ M = 50 #TODO try changing M and see if it improves results?
 LEARNING_RATE = 0.01
 
 BATCH_SIZE = 100
-NUM_BATCHES = 100000 # this number controls how long the program trains
+# NUM_BATCHES = 100000 # this number controls how long the program trains
 EPOCHS = 100
 
 # takes very close to 2^n iterations to reduce loss by one place with NUM_BATCHES = 1000000 and LEARNING_RATE = 0.0001
@@ -43,9 +43,10 @@ train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(cross_ent
 def parseDraftnetArgs():
     argparser = argparse.ArgumentParser(description="Set train and test files.")
     argparser.add_argument('--train', help='path to train file', default='data/train-36740.json')
-    argparser.add_argument('--test', help='path to test file', default='data/test-5000.json')
-    argparser.add_argument('--save', help='path to save model', default="results/bag-{}-{}-{}-{}.ckpt".format(BATCH_SIZE, NUM_BATCHES, LEARNING_RATE, M))
+    argparser.add_argument('--test', help='path to test file', default='data/test-5000.json') # FIXME save arguments
+    argparser.add_argument('--save', help='path to save model', default="results/bag-{}-{}-{}.ckpt".format(BATCH_SIZE, LEARNING_RATE, M))
     argparser.add_argument('--model', help='path to model file', default=None)
+    argparser.add_argument('--batches', help='number of total batches', type=int, default=100000)
     # argparser.add_argument('--threshold', help='thresold for deciding pick set membership', default=0)
     return argparser.parse_args()
 
@@ -158,7 +159,7 @@ if __name__ == "__main__":
 
                 epochLoss = 0.0
 
-                for _ in range(NUM_BATCHES // EPOCHS):
+                for _ in range(args.batches // EPOCHS):
                     x, y = zip(*random.sample(trials, BATCH_SIZE))
                     epochLoss += session.run([cross_entropy, train_step], feed_dict={X: x, Y: y})[0]
 

@@ -11,8 +11,8 @@ import json, sys
 from bagHeroes import *
 from .models import Hero
 
-# MODEL = "results/bag-100-1000000-0.01-50.ckpt"
 MODEL = "results/pro-smaller-7.00.ckpt"
+# MODEL = "results/7.06-136.json"
 
 with session.as_default():
     saver = tf.train.Saver()

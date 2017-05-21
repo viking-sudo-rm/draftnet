@@ -1,2 +1,2 @@
-model_checkpoint_path: "pro-smaller-7.00.ckpt"
-all_model_checkpoint_paths: "pro-smaller-7.00.ckpt"
+model_checkpoint_path: "7.06-136.json"
+all_model_checkpoint_paths: "7.06-136.json"
