@@ -58,11 +58,12 @@ class WinGraph(DraftGraph):
 # need this to avoid issues when importing something using argparser
 def parseDraftnetArgs():
     argparser = argparse.ArgumentParser(description="Set train and test files.")
-    argparser.add_argument('--train', help='path to train file', default='data/train-36740.json')
-    argparser.add_argument('--test', help='path to test file', default='data/test-5000.json') # FIXME save arguments
+    argparser.add_argument('--train', help='path to train file', default='train/pro-7.00.json')
+    argparser.add_argument('--test', help='path to test file', default='test/pro-7.00.json') # FIXME save arguments
     argparser.add_argument('--save', help='path to save model', default="results/bag-{}-{}-{}.ckpt".format(BATCH_SIZE, LEARNING_RATE, M))
     argparser.add_argument('--model', help='path to model file', default=None)
     argparser.add_argument('--batches', help='number of total batches', type=int, default=100000)
+    argparser.add_argument('--layer', help='layer to use while rendering TSNE data', type=int, default=2)
     # argparser.add_argument('--threshold', help='thresold for deciding pick set membership', default=0)
     return argparser.parse_args()
 
