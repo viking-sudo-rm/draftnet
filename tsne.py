@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sklearn.manifold, matplotlib
 import matplotlib.pyplot as plt
-from bagHeroes import *
+from draftnet import *
 
 args = parseDraftnetArgs()
 
@@ -19,8 +19,6 @@ with session.as_default():
 
 	fig, ax = plt.subplots()
 	ax.scatter(x, y)
-
-	print(len(X_reduced))
 
 	# add text labels
 	for i in range(len(X_reduced)):

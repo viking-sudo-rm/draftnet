@@ -6,9 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 import json, sys
 
-# TODO there's probably a better way to do this with an environment variable
-# sys.path.insert(0,'..')
-from bagHeroes import *
+from draftnet import *
 from .models import Hero
 
 MODEL = "results/pro-smaller-7.00.ckpt"
