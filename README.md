@@ -1,8 +1,8 @@
 # Draftnet
 
-[Dota 2](http://blog.dota2.com/?l=english) is a very popular video game played competitively as an eSport.
+[Dota 2](http://blog.dota2.com/?l=english) is a popular video game played competitively as an eSport.
 An important part of every Dota 2 game is the draft: the phase during which each team of five players picks what 
-characters (heroes) they want to play with.
+heroes (characters) they want to play with.
 
 This may sound simple, but drafting well is deceptively complicated. Each Dota hero has a unique set of abilities, and the  specific interaction of one hero’s abilities with those of its 
 teammates might allow for an awesome combination play. Similarly, another ability might completely mitigate the 
