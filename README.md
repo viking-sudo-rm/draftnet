@@ -6,7 +6,7 @@ heroes (characters) they want to play with.
 
 This may sound simple, but drafting well is deceptively complicated. Each Dota hero has a unique set of abilities, and the  specific interaction of one hero’s abilities with those of its 
 teammates might allow for an awesome combination play. Similarly, another ability might completely mitigate the 
-destructive potential of the enemy team. Among professional Dota players, drafting is complicated artform that decides the fate of million-dollar games.
+destructive potential of the enemy team. Among professional Dota players, drafting is complicated artform that decides the outcomes of million-dollar games.
 
 Draftnet learns how to draft well by analyzing thousands of winning drafts by professional Dota players. These games
 are read from the [OpenDota](https://www.opendota.com/) API, and then used to train a feed-forward neural network that makes drafting decisions.
