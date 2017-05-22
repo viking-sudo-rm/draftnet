@@ -22,7 +22,7 @@ Our Python implementation of Draftnet requires the [Tensorflow](https://www.tens
 python draftnet.py --train train/pro-7.00.json --test test/pro-7.00.json --save results/customModel.ckpt
 ~~~~
 
-Train and test files contain the results of Dota 2 games fetched from the OpenDota API. You can find some provided training and testing data in the `data` folder. Type `python draftnet.py --help` to see a full list of run options.
+Train and test files contain the results of Dota 2 games fetched from the OpenDota API. Type `python draftnet.py --help` to view a full list of run options.
 
 ## How Draftnet works
 
