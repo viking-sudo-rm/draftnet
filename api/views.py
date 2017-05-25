@@ -9,7 +9,8 @@ import json, sys
 from draftnet import *
 from .models import Hero
 
-MODEL = "results/pro-smaller-7.00.ckpt"
+MODEL = "results/pub-7.06-3809.ckpt"
+# MODEL = "results/pro-smaller-7.00.ckpt"
 # MODEL = "results/7.06-136.json"
 
 with session.as_default():

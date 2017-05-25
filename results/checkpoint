@@ -1,2 +1,2 @@
-model_checkpoint_path: "7.06-136.json"
-all_model_checkpoint_paths: "7.06-136.json"
+model_checkpoint_path: "pub-7.06-3809.ckpt"
+all_model_checkpoint_paths: "pub-7.06-3809.ckpt"

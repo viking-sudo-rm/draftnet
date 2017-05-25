@@ -7,13 +7,10 @@ from util import *
 M = 50 #TODO try changing M and see if it improves results?
 LEARNING_RATE = 0.01
 
-BATCH_SIZE = 100
-# NUM_BATCHES = 100000 # this number controls how long the program trains
 EPOCHS = 100
+PICK_THRESHOLD = 0.2 #0.35
 
 # takes very close to 2^n iterations to reduce loss by one place with NUM_BATCHES = 1000000 and LEARNING_RATE = 0.0001
-
-PICK_THRESHOLD = 0.1 #0.35
 
 class DraftGraph(object):
 
@@ -60,9 +57,10 @@ def parseDraftnetArgs():
     argparser = argparse.ArgumentParser(description="Set train and test files.")
     argparser.add_argument('--train', help='path to train file', default='train/pro-7.00.json')
     argparser.add_argument('--test', help='path to test file', default='test/pro-7.00.json') # FIXME save arguments
-    argparser.add_argument('--save', help='path to save model', default="results/bag-{}-{}-{}.ckpt".format(BATCH_SIZE, LEARNING_RATE, M))
+    argparser.add_argument('--save', help='path to save model', default="results/bag-{}-{}.ckpt".format(LEARNING_RATE, M))
     argparser.add_argument('--model', help='path to model file', default=None)
     argparser.add_argument('--batches', help='number of total batches', type=int, default=100000)
+    argparser.add_argument('--batchSize', help='number of games per batch', type=int, default=100)
     argparser.add_argument('--layer', help='layer to use while rendering TSNE data', type=int, default=2)
     # argparser.add_argument('--threshold', help='thresold for deciding pick set membership', default=0)
     return argparser.parse_args()
@@ -167,7 +165,7 @@ if __name__ == "__main__":
         if not args.model:
 
             print("reading training data..")
-            train = [game for game in json.load(open(args.train, "r")) if len(game["picks_bans"]) == 20]
+            train = [game for game in json.load(open(args.train, "r")) if game["picks_bans"] != None and len(game["picks_bans"]) == 20]
             print("building trials..")
             trials = flatten([format(game) for game in train])
 
@@ -177,12 +175,12 @@ if __name__ == "__main__":
                 epochLoss = 0.0
 
                 for _ in range(args.batches // EPOCHS):
-                    x, y = zip(*random.sample(trials, BATCH_SIZE))
+                    x, y = zip(*random.sample(trials, args.batchSize))
                     epochLoss += session.run([graph.cross_entropy, graph.train_step], feed_dict={graph.X: x, graph.Y: y})[0]
 
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
 
-                print("epoch", i, "mean cross-entropy:", '{:.2f}'.format(sum(epochLoss) / (args.batches // EPOCHS) / BATCH_SIZE))
+                print("epoch", i, "mean cross-entropy:", '{:.2f}'.format(sum(epochLoss) / (args.batches // EPOCHS) / args.batchSize))
 
             save_path = saver.save(session, args.save)
             print("saved session to", save_path)
