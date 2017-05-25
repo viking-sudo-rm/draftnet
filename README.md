@@ -1,12 +1,12 @@
 # Draftnet
 
-[Dota 2](http://blog.dota2.com/?l=english) is a very popular video game played competitively as an eSport.
+[Dota 2](http://blog.dota2.com/?l=english) is a popular video game played competitively as an eSport.
 An important part of every Dota 2 game is the draft: the phase during which each team of five players picks what 
-characters (heroes) they want to play with.
+heroes (characters) they want to play with.
 
 This may sound simple, but drafting well is deceptively complicated. Each Dota hero has a unique set of abilities, and the  specific interaction of one hero’s abilities with those of its 
 teammates might allow for an awesome combination play. Similarly, another ability might completely mitigate the 
-destructive potential of the enemy team. Among professional Dota players, drafting is complicated artform that decides the fate of million-dollar games.
+destructive potential of the enemy team. Among professional Dota players, drafting is complicated artform that decides the outcomes of million-dollar games.
 
 Draftnet learns how to draft well by analyzing thousands of winning drafts by professional Dota players. These games
 are read from the [OpenDota](https://www.opendota.com/) API, and then used to train a feed-forward neural network that makes drafting decisions.
@@ -16,13 +16,13 @@ You can find an easy-to-use web interface for Draftnet at http://draftnet.heroku
 
 ## Running the Draftnet source code
 
-Our Python implementation of Draftnet requires the [Tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed Tensorflow and cloned our repository, you can train our feed-forward network with `bagHeroes.py`. For example:
+Our Python implementation of Draftnet requires the [Tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed Tensorflow and cloned our repository, you can train our feed-forward network with `draftnet.py`. For example:
 
 ~~~~
-python bagHeroes.py --train train/pro-7.00.json --test test/pro-7.00.json --save results/customModel.ckpt
+python draftnet.py --train train/pro-7.00.json --test test/pro-7.00.json --save results/customModel.ckpt
 ~~~~
 
-Train and test files contain the results of Dota 2 games fetched from the OpenDota API. You can find some provided training and testing data in the `data` folder. Type `python bagHeroes.py --help` to see a full list of run options.
+Train and test files contain the results and drafts of Dota 2 games fetched from the OpenDota API. Type `python draftnet.py --help` to view a full list of run options.
 
 ## How Draftnet works
 
