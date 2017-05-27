@@ -1,7 +1,9 @@
 {% load static %}
 <html ng-app="draftnet">
 <head>
+	
 	<title>Draftnet &middot; Draft</title>
+	<link rel="shortcut icon" href="/favicon.ico">
 
 	<script type="text/javascript" src="{% static 'draft/angular/angular.js' %}"></script>
 	<script type="text/javascript" src="{% static 'draft/jquery-3.2.1.min.js' %}"></script>
@@ -28,6 +30,9 @@
 </div>
 <div class="content-container">
 	<div class="text-center search-container"><input type="text" id="search" ng-model="draftCtrl.searchFilter" placeholder="Search heroes..." /></div>
+	<div class="model-container">
+		<select id="modelSelect" ng-model="draftCtrl.selectedModel" ng-options="x for x in draftCtrl.models" ng-change="draftCtrl.predict()"></select>
+	</div>
 	<div id="heroGrid">
 		<div class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'">
 			<div class="ban-line" ng-if="draftCtrl.isBanned(hero)"></div>

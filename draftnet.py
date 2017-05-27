@@ -135,6 +135,16 @@ def getSuggestions(distribution, notAllowed, PICK_THRESHOLD=PICK_THRESHOLD):
     # return the picks from greatest to least probability
     return sorted(picks, key=lambda i: 1 - distribution[i])
 
+def loadSession(name):
+    session = tf.Session()
+    with session.as_default():
+        saver = tf.train.Saver()
+        saver.restore(session, "results/" + name + ".ckpt")
+        return session
+
+def loadSessions(*names):
+    return {name: loadSession(name) for name in names}, names
+
 def testInSession(test, session, graph, PICK_THRESHOLD=PICK_THRESHOLD):
     print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
     counts = [0.0] * 10
@@ -195,4 +205,6 @@ if __name__ == "__main__":
 else:
 
     graph = NextHeroGraph()
-    session = tf.Session() # session for others to use
+
+    # need sessionNames to preserve ordering of options
+    sessions, sessionNames = loadSessions("pub-7.06-3809", "pro-smaller-7.00")

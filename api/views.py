@@ -13,9 +13,9 @@ MODEL = "results/pub-7.06-3809.ckpt"
 # MODEL = "results/pro-smaller-7.00.ckpt"
 # MODEL = "results/7.06-136.json"
 
-with session.as_default():
-    saver = tf.train.Saver()
-    saver.restore(session, MODEL)
+# with session.as_default():
+#     saver = tf.train.Saver()
+#     saver.restore(session, MODEL)
 
 @csrf_exempt # I don't think this causes security issues, but maybe?
 
@@ -31,6 +31,9 @@ def predict(request):
 	if "team0" not in args or "team1" not in args or "isPick" not in args or type(args["isPick"]) != bool:
 		return JsonResponse(None, safe=False)
 
+	if args["model"] not in sessions:
+		return JsonResponse(None, safe=False)
+
 	team0 = Team.fromJSON(args["team0"])
 	team1 = Team.fromJSON(args["team1"])
 	isPick = args["isPick"]
@@ -39,6 +42,7 @@ def predict(request):
 		return JsonResponse(None, safe=False)
 
 	context = getContext(team0, team1, isPick)
+	session = sessions[args["model"]]
 	distribution = getDistribution(context, session, graph)
 	suggestions = getSuggestions(distribution, getNotAllowed(context))
 
@@ -53,3 +57,6 @@ def heroes(request):
 		obj['id'] = hero['pk']
 		result.append(obj)
 	return JsonResponse(result, safe=False)
+
+def models(request):
+	return JsonResponse(sessionNames, safe=False)

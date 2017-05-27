@@ -228,3 +228,22 @@ h3.suggestion-text{
 	border: none;
 	padding: 9px 17px;
 }
+
+.model-container {
+	position: absolute;
+	right: 90px;
+	top: 130px;
+}
+
+#modelSelect {
+	background-color: rgba(189, 186, 178, 0.7);
+	color: white;
+	/*color: #757575;*/
+	border: none;
+	text-align: center;
+	vertical-align: center;
+	width: 160px;
+	height: 30px;
+	font-size: 18px;
+	/*padding-top:30px;*/
+}
