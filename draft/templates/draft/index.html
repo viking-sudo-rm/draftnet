@@ -1,7 +1,7 @@
 {% load static %}
 <html ng-app="draftnet">
 <head>
-	
+
 	<title>Draftnet &middot; Draft</title>
 	<link rel="shortcut icon" href="/favicon.ico">
 
@@ -38,7 +38,6 @@
 			<div class="ban-line" ng-if="draftCtrl.isBanned(hero)"></div>
 			<img src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'picked' : draftCtrl.isPicked(hero), 'banned' : draftCtrl.isBanned(hero)}" ng-click="draftCtrl.selectHero(hero)">
 		</div>
-		
 	</div>
 	<div class="button-choose-container text-center">
 		<button ng-if="draftCtrl.isValidSelection() && !draftCtrl.draftIsDone()" ng-class="{'ban' : !draftCtrl.getNextAction().pick, 'pick' : draftCtrl.getNextAction().pick }" ng-click="draftCtrl.choose()" class="text-uppercase button-choose">[[ draftCtrl.getNextActionTitle() ]] [[ draftCtrl.selectedHero.localized_name ]]</button>

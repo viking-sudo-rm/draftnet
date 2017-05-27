@@ -31,7 +31,7 @@ def predict(request):
 	if "team0" not in args or "team1" not in args or "isPick" not in args or type(args["isPick"]) != bool:
 		return JsonResponse(None, safe=False)
 
-	if args["model"] not in sessions:
+	if "model" not in args or args["model"] not in sessions:
 		return JsonResponse(None, safe=False)
 
 	team0 = Team.fromJSON(args["team0"])

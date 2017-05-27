@@ -230,9 +230,10 @@ h3.suggestion-text{
 }
 
 .model-container {
-	position: absolute;
+	display: block;
+	/*position: absolute;
 	right: 90px;
-	top: 130px;
+	top: 130px;*/
 }
 
 #modelSelect {
