@@ -227,16 +227,20 @@ h3.suggestion-text{
 	font-size: 18px;
 	border: none;
 	padding: 9px 17px;
+	text-align: left;
 }
 
 .model-container {
-	display: block;
-	/*position: absolute;
+	/*display: block;*/
+	/*position: absolute;*/
 	right: 90px;
-	top: 130px;*/
+	top: 130px;
+	float: right;
+	margin-right: 50px;
+	margin-top: 10px;
 }
 
-#modelSelect {
+#model-select {
 	background-color: rgba(189, 186, 178, 0.7);
 	color: white;
 	/*color: #757575;*/
