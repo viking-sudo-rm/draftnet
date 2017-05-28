@@ -130,6 +130,7 @@ h3.suggestion-text{
 
 
 #topBar {
+	min-height: 71px;
 	margin-bottom: 20px;
 }
 
@@ -226,4 +227,54 @@ h3.suggestion-text{
 	font-size: 18px;
 	border: none;
 	padding: 9px 17px;
+	text-align: left;
+}
+
+.model-container {
+	/*display: block;*/
+	/*position: absolute;*/
+	right: 90px;
+	top: 130px;
+	float: right;
+	margin-right: 50px;
+	margin-top: 7px;
+}
+
+#model-select {
+	background-color: rgba(189, 186, 178, 0.7);
+	color: white;
+	/*color: #757575;*/
+	border: none;
+	text-align: center;
+	vertical-align: center;
+	width: 160px;
+	height: 30px;
+	font-size: 18px;
+	/*padding-top:30px;*/
+}
+
+div.bottom {
+	background-color: #1b1b29;
+	color: white;
+	vertical-align: center;
+	padding: 16px 50px;
+/*	min-height: 30px;*/
+}
+
+ul.bottom {
+	margin: 0px;
+}
+
+li.bottom {
+	display: inline-block;
+	padding: 0px 20px;
+	margin: 0px;
+}
+
+nav.bottom {
+	color: white;
+	position: relative;
+	top: 3px;
+	margin: 0px;
+	padding: 0px;
 }

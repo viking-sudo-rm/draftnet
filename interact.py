@@ -1,5 +1,5 @@
 from __future__ import print_function
-from bagHeroes import *
+from draftnet import *
 
 if __name__ == "__main__":
 

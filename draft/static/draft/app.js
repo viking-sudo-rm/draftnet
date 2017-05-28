@@ -19,12 +19,23 @@
 		var self = this
 		self.list = []
 		$http.get("/api/heroes/")
-				.then(function (response) {
-				    self.list = response.data
-				    self.loadHeroes()
+			.then(function (response) {
+			    self.list = response.data
+			    self.loadHeroes()
 		}, function(data) {
             console.log('Error: ' + data);
         })
+
+		$http.get("/api/models/")
+			.then(function (response) {
+				self.models = response.data
+				self.selectedModel = self.models[0]
+				if (self.byID) { // predict after both models and heroes have loaded
+					self.predict()
+				}
+			}, function(data) {
+				console.log('Error: ' + data)
+			})
 
 		self.pickCounter = 0
 		const PICK_BAN_ORDER = 	[{"pick": false, "team": 0},  // where team 0 picks first
@@ -53,9 +64,14 @@
 								 {"pick": true, "team": 1}];
 
 		var Team = function() {
+
 			this.picks = []
 			this.bans = []
 			this.side = 0
+
+			this.isFull = function() {
+				return this.picks.length == 5
+			}
 		}
 
 		self.teams = [new Team(), new Team()]
@@ -117,11 +133,22 @@
 
 		// pass the team you are predicting for
 		self.predict = function(team = 0) {
+
+			if (!self.selectedModel) {
+				return
+			}
+
+			if (self.draftIsDone()) {
+				self.prediction = undefined
+				return
+			}
+
 			data = {
 				"team0": team == 0 ? self.teams[0] : self.teams[1],
 				"team1": team == 0 ? self.teams[1] : self.teams[0],
 				"side": team == 0 ? self.teams[0].side : self.teams[1].side,
-				"isPick": self.getNextAction()["pick"]
+				"isPick": self.getNextAction()["pick"],
+				"model": self.selectedModel
 			}
 			$http.post("/api/predict/", data)
 				.then(function successCallback(response) {
@@ -149,7 +176,9 @@
 			for (var i = 0; i < self.list.length; i++) {
 				self.byID[self.list[i].id] = self.list[i]
 			}
-			self.predict()
+			if (self.models) { // predict after both models and heroes have loaded
+				self.predict()
+			}
 		}
 
 		// get the next action (pick/ban + team) represented as an object
@@ -167,6 +196,11 @@
 		}
 
 		self.getSuggestionText = function() {
+
+			if (self.draftIsDone()) {
+				return undefined
+			}
+
 			var currentTeam = self.getNextAction().team == 0 ? "Team A" : "Team B"
 			var currentAction = self.getNextAction().pick ? "picking" : "banning"
 			return currentTeam + " should consider " + currentAction + ":"
@@ -176,6 +210,10 @@
 			var currentTeam = self.getNextAction().team == 0 ? "Team A's" : "Team B's"
 			var currentAction = self.getNextAction().pick ? "pick" : "ban"
 			return currentTeam + " turn to " + currentAction
+		}
+
+		self.draftIsDone = function() {
+			return self.teams[0].isFull() && self.teams[1].isFull()
 		}
 
 	});

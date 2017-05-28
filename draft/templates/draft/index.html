@@ -1,7 +1,9 @@
 {% load static %}
 <html ng-app="draftnet">
 <head>
+
 	<title>Draftnet &middot; Draft</title>
+	<link rel="shortcut icon" href="/favicon.ico">
 
 	<script type="text/javascript" src="{% static 'draft/angular/angular.js' %}"></script>
 	<script type="text/javascript" src="{% static 'draft/jquery-3.2.1.min.js' %}"></script>
@@ -20,24 +22,26 @@
 <body ng-controller="DraftController as draftCtrl">
 <img src="{% static 'draft/images/titan_background.jpg' %}" id="background" />
 <div id="topBar" class="bar row">
-		<div class="prediction col-md-8" ng-if="draftCtrl.prediction">
+		<div class="prediction col-md-8" ng-if="draftCtrl.prediction && !draftCtrl.draftIsDone()">
 			<h3 class="suggestion-text">[[ draftCtrl.getSuggestionText() ]]</h3>
 			<img class="suggestion" ng-repeat="hero in draftCtrl.prediction" ng-class="{'selected' : draftCtrl.isSelected(hero)}" ng-click="draftCtrl.selectHero(hero)" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" />
 		</div>
-		<div class="turn-banner col-md-4 text-uppercase text-right" ng-class="{'choosing' : draftCtrl.isChoosing(), 'reporting' : !draftCtrl.isChoosing()}">[[ draftCtrl.getTurnText() ]]</div>
+		<div class="turn-banner col-md-4 text-uppercase text-right" ng-if="!draftCtrl.draftIsDone()" ng-class="{'choosing' : draftCtrl.isChoosing(), 'reporting' : !draftCtrl.isChoosing()}">[[ draftCtrl.getTurnText() ]]</div>
 </div>
 <div class="content-container">
+	<div class="model-container hide-small">
+		<select id="model-select" ng-model="draftCtrl.selectedModel" ng-options="x for x in draftCtrl.models" ng-change="draftCtrl.predict()"></select>
+	</div>
 	<div class="text-center search-container"><input type="text" id="search" ng-model="draftCtrl.searchFilter" placeholder="Search heroes..." /></div>
 	<div id="heroGrid">
 		<div class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'">
 			<div class="ban-line" ng-if="draftCtrl.isBanned(hero)"></div>
 			<img src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'picked' : draftCtrl.isPicked(hero), 'banned' : draftCtrl.isBanned(hero)}" ng-click="draftCtrl.selectHero(hero)">
 		</div>
-		
 	</div>
 	<div class="button-choose-container text-center">
-		<button ng-if="draftCtrl.isValidSelection()" ng-class="{'ban' : !draftCtrl.getNextAction().pick, 'pick' : draftCtrl.getNextAction().pick }" ng-click="draftCtrl.choose()" class="text-uppercase button-choose">[[ draftCtrl.getNextActionTitle() ]] [[ draftCtrl.selectedHero.localized_name ]]</button>
-		<div ng-if="!draftCtrl.isValidSelection()" class="spacer"></div>
+		<button ng-if="draftCtrl.isValidSelection() && !draftCtrl.draftIsDone()" ng-class="{'ban' : !draftCtrl.getNextAction().pick, 'pick' : draftCtrl.getNextAction().pick }" ng-click="draftCtrl.choose()" class="text-uppercase button-choose">[[ draftCtrl.getNextActionTitle() ]] [[ draftCtrl.selectedHero.localized_name ]]</button>
+		<div ng-if="!draftCtrl.isValidSelection() || draftCtrl.draftIsDone()" class="spacer"></div>
 	</div>
 </div>
 
@@ -78,5 +82,11 @@
 		</div>
 	</div>
 </div>
+<div class="bottom"><nav class="bottom"><ul class="bottom">
+	<li class="bottom">&copy; Will Merrill, Adisa Malik, Danny Montealegre</li>
+	<li class="bottom"><a href="https://github.com/viking-sudo-rm/draftnet/blob/master/README.md">About</a></li>
+	<li class="bottom"><a href="https://www.facebook.com/yaledota/">Facebook</a></li>
+	<li class="bottom"><a href="http://cpsc.yale.edu/news/yale-computer-society-grace-hopper-and-alan-perlis-prizes">Grace Hopper Prize</a></li>
+</ul></nav></div>
 </body>
 </html>

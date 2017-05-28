@@ -1,27 +1,32 @@
-import sklearn.manifold
-import numpy as np
+from __future__ import print_function
+import sklearn.manifold, matplotlib
 import matplotlib.pyplot as plt
-import matplotlib
-import display
+from draftnet import *
 
-X = np.loadtxt("results/W.csv", delimiter=",")
+args = parseDraftnetArgs()
 
-tsne = sklearn.manifold.TSNE(n_components=2, perplexity=30.0)
+with tf.Session() as session:
+	
+	saver = tf.train.Saver()
+	saver.restore(session, args.model)
 
-print "fitting TSNE.."
-X_reduced = tsne.fit_transform(X)
+	tsne = sklearn.manifold.TSNE(n_components=2, perplexity=30.0)
 
-x, y = zip(*X_reduced) # separate into two lists
+	print("fitting TSNE..")
+	X_reduced = tsne.fit_transform(session.run(graph.W_2).transpose() if args.layer == 2 else None)
+	# FIXME embeddings in the other direction unimplemented
 
-fig, ax = plt.subplots()
-ax.scatter(x, y)
+	x, y = zip(*X_reduced) # separate into two lists
 
-# add text labels
-for i in range(len(X)):
-	plt.annotate(
-		display.getName(display.int2hero(i)),
-		xy=X_reduced[i],
-		fontsize=6
-	)
+	fig, ax = plt.subplots()
+	ax.scatter(x, y)
 
-plt.show()
+	# add text labels
+	for i in range(len(X_reduced)):
+		plt.annotate(
+			APIHero.byID(i).getName(),
+			xy=X_reduced[i],
+			fontsize=6
+		)
+
+	plt.show()
