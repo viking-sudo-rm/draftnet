@@ -16,7 +16,7 @@ You can find an easy-to-use web interface for Draftnet at http://draftnet.heroku
 
 ## Running the Draftnet source code
 
-Our Python implementation of Draftnet requires the [Tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed Tensorflow and cloned our repository, you can train our feed-forward network with `draftnet.py`. For example:
+Our Python implementation of Draftnet requires the [Tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed Tensorflow and cloned our repository, you can train the prediction network with `draftnet.py`. For example:
 
 ~~~~
 python draftnet.py --train train/pro-7.00.json --test test/pro-7.00.json --save results/customModel.ckpt
