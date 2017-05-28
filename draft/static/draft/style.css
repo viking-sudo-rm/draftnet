@@ -237,7 +237,7 @@ h3.suggestion-text{
 	top: 130px;
 	float: right;
 	margin-right: 50px;
-	margin-top: 10px;
+	margin-top: 7px;
 }
 
 #model-select {
@@ -251,4 +251,30 @@ h3.suggestion-text{
 	height: 30px;
 	font-size: 18px;
 	/*padding-top:30px;*/
+}
+
+div.bottom {
+	background-color: #1b1b29;
+	color: white;
+	vertical-align: center;
+	padding: 16px 50px;
+/*	min-height: 30px;*/
+}
+
+ul.bottom {
+	margin: 0px;
+}
+
+li.bottom {
+	display: inline-block;
+	padding: 0px 20px;
+	margin: 0px;
+}
+
+nav.bottom {
+	color: white;
+	position: relative;
+	top: 3px;
+	margin: 0px;
+	padding: 0px;
 }
