@@ -19,7 +19,7 @@ You can find an easy-to-use web interface for Draftnet at http://draftnet.heroku
 Our Python implementation of Draftnet requires the [Tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed Tensorflow and cloned our repository, you can train the prediction network with `draftnet.py`. For example:
 
 ~~~~
-python draftnet.py --train train/pro-7.00.json --test test/pro-7.00.json --save results/customModel.ckpt
+python draftnet.py --train train/pro-7.00.json --test test/pro-7.00.json --save models/pick/customModel.ckpt
 ~~~~
 
 Train and test files contain game data fetched from the OpenDota API. Type `python draftnet.py --help` to view a full list of run options.
@@ -33,5 +33,5 @@ Draftnet uses a "bag-of-heroes" architecture inspired by feed-forward neural net
 In addition to predicting hero picks, our neural network also produces embeddings of each hero in Dota. Intuitively, an embedding is a vector representation of a hero that captures all the important features that that hero has. Since the network stores these embeddings as vectors, we can use them to visualize the relationships between heroes. You can use `tsne.py` to produce a plot of these hero vectors in 2D space. For example:
 
 ~~~
-python tsne.py --model results/bag-100-1000000-0.01-50.ckpt
+python tsne.py --model models/pick/pro-7.00.ckpt
 ~~~
