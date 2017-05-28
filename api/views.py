@@ -41,13 +41,20 @@ def predict(request):
 	if not team0 or not team1:
 		return JsonResponse(None, safe=False)
 
-	context = getContext(team0, team1, isPick, args["side"])
+	next_context = getContext(team0, team1, isPick, args["side"])
 	session = sessions[args["model"]]
 	distribution = getDistribution(context, session, graph)
 	suggestions = getSuggestions(distribution, getNotAllowed(context))
+	if isPick:
+		if args["side"] == 1:
+			advantage_context = team1.pickVector + team0.pickVector
+		else:
+			advantage_context = team0.pickVector + team1.pickVector
+		advantage = getDistribution(context, session, graph) # make graph WinGraph
 
 	return JsonResponse({	"distribution": [float(d) for d in distribution],
-							"suggestions": suggestions	})
+							"suggestions": suggestions,
+							"advantage": advantage	})
 
 def heroes(request):
 	heroList = json.loads(serializers.serialize('json', Hero.objects.all()))

@@ -14,6 +14,8 @@
 
 	app.controller('DraftController', function($scope, $window, $http){
 
+		// TODO: set teams as radiant and dire, advantage visuals
+
 		const N = 113
 		const MAX_SUGGESTIONS = 10
 		var self = this
@@ -63,18 +65,18 @@
 								 {"pick": true, "team": 0},
 								 {"pick": true, "team": 1}];
 
-		var Team = function() {
+		var Team = function(name) {
 
 			this.picks = []
 			this.bans = []
 			this.side = 0
-
+			this.name = name
 			this.isFull = function() {
 				return this.picks.length == 5
 			}
 		}
 
-		self.teams = [new Team(), new Team()]
+		self.teams = [new Team("Team A"), new Team("Team B")]
 
 		self.searchFilter = ""
 		self.selectedHero = undefined
@@ -201,13 +203,13 @@
 				return undefined
 			}
 
-			var currentTeam = self.getNextAction().team == 0 ? "Team A" : "Team B"
+			var currentTeam = self.teams[self.getNextAction().team].name
 			var currentAction = self.getNextAction().pick ? "picking" : "banning"
 			return currentTeam + " should consider " + currentAction + ":"
 		}
 
 		self.getTurnText = function() {
-			var currentTeam = self.getNextAction().team == 0 ? "Team A's" : "Team B's"
+			var currentTeam = self.teams[self.getNextAction().team].name + "'s"
 			var currentAction = self.getNextAction().pick ? "pick" : "ban"
 			return currentTeam + " turn to " + currentAction
 		}

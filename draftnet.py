@@ -45,13 +45,12 @@ class DraftGraph(object):
 class NextHeroGraph(DraftGraph):
 
     def __init__(self):
-        super(NextHeroGraph, self).__init__(logitsX=4*N+1, logitsY=N)
+        super(NextHeroGraph, self).__init__(logitsX=4*N+2, logitsY=N)
 
     @staticmethod
     def format(game):
         picks_bans = game['picks_bans']
         winning_team = 0 if game['radiant_win'] else 1
-        first_pick = picks_bans[0]['team'] # gives a 0 or a 1
         output = []
 
         team0, team1 = Team(), Team() # team 0 is the winning/picking team
@@ -61,7 +60,7 @@ class NextHeroGraph(DraftGraph):
             is_pick_bit = 1 if picks_bans[i]['is_pick'] else 0
 
             if picks_bans[i]['team'] == winning_team:
-                a = getContext(team0, team1, is_pick_bit, winning_team)
+                a = team0.getContextVector() + team1.getContextVector() + [is_pick_bit] + [winning_team]
                 output.append((a, getOneHot(picks_bans[i])))
                 if picks_bans[i]['is_pick']:
                     team0.pick(APIHero.byID(hero_id))
@@ -78,26 +77,18 @@ class NextHeroGraph(DraftGraph):
 class WinGraph(DraftGraph):
 
     def __init__(self):
-        super(WinGraph, self).__init__(logitsX=2*N, logitsY=1)
+        super(WinGraph, self).__init__(logitsX=2*N, logitsY=2)
 
     @staticmethod
     def format(game):
         picks_bans = game['picks_bans']
-        winning_team = 0 if game['radiant_win'] else 1
-        team0, team1 = Team(), Team()
+        result = [1 if game['radiant_win'] else 0, 0 if game['radiant_win'] else 1]
+        teams = [Team(), Team()]
         output = []
         for action in picks_bans:
-            if not action['is_pick']: continue
             hero = APIHero.byID(getShiftedID(action['hero_id']))
-            if winning_team == action['team']:
-                team0.pick(hero)
-                output.append((team0.pickVector + team1.pickVector, 1))
-                output.append((team1.pickVector + team0.pickVector, 0)) # is it useful to double up like this?
-            else:
-                team1.pick(hero)
-                output.append((team1.pickVector + team0.pickVector, 1))
-                output.append((team0.pickVector + team1.pickVector, 0))
-
+            teams[action['team']].pick(hero)
+            output.append((teams[0].pickVector + teams[1].pickVector, result))
         return output
 
 # need this to avoid issues when importing something using argparser
@@ -122,11 +113,11 @@ def getOneHot(pick):
 def getNames(picks):
     return [APIHero.byID(pick).getName() for pick in picks]
 
-def getContext(team0, team1, isPick, side):
-    return team0.getContextVector() + team1.getContextVector() + [1 if isPick else 0] + [side]
-
 def getDistribution(context, session, graph):
     return session.run(graph.Y_, feed_dict={graph.X: [context]})[0]
+
+def getContext(team0, team1, isPick, side):
+    return team0.getContextVector() + team1.getContextVector() + [1 if isPick else 0] + [side]
 
 # collapse a context list x into a flag-set of non-allowable heroes
 def getNotAllowed(context):
@@ -186,6 +177,8 @@ if __name__ == "__main__":
     args = parseDraftnetArgs()
     graph = NextHeroGraph()
 
+    # TODO: also train WinGraph
+    
     with tf.Session() as session:
 
         session.run(tf.global_variables_initializer())
