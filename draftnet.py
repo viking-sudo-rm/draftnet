@@ -86,6 +86,7 @@ class WinGraph(DraftGraph):
         teams = [Team(), Team()]
         output = []
         for action in picks_bans:
+            if not action['is_pick']: continue
             hero = APIHero.byID(getShiftedID(action['hero_id']))
             teams[action['team']].pick(hero)
             output.append((teams[0].pickVector + teams[1].pickVector, result))
@@ -155,7 +156,7 @@ def loadSession(name):
 def loadSessions(*names):
     return {name: loadSession(name) for name in names}, names
 
-def testInSession(test, session, graph, PICK_THRESHOLD=PICK_THRESHOLD):
+def testNextHeroInSession(test, session, graph, PICK_THRESHOLD=PICK_THRESHOLD):
     print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
     counts = [0.0] * 10
     neighborhood_sizes = [0.0] * 10
@@ -171,12 +172,14 @@ def testInSession(test, session, graph, PICK_THRESHOLD=PICK_THRESHOLD):
     print("accuracies:", [c / len(test) for c in counts])
     print("neighborhood sizes:", [n / len(test) for n in neighborhood_sizes])
 
+def testWinInSession(test, session, graph):
+    pass
 
 if __name__ == "__main__":
 
     args = parseDraftnetArgs()
-    graph = NextHeroGraph()
-
+    next_hero_graph = NextHeroGraph()
+    win_graph = WinGraph()
     # TODO: also train WinGraph
     
     with tf.Session() as session:
@@ -192,14 +195,33 @@ if __name__ == "__main__":
             trials = flatten([NextHeroGraph.format(game) for game in train])
             random.shuffle(trials) # since instances from the same game are together
 
-            print("starting training..")
+            print("training NextHeroGraph..")
             for i in range(EPOCHS):
 
                 epochLoss = 0.0
 
                 for _ in range(args.batches // EPOCHS):
                     x, y = zip(*random.sample(trials, args.batchSize))
-                    epochLoss += session.run([graph.cross_entropy, graph.train_step], feed_dict={graph.X: x, graph.Y: y})[0]
+                    epochLoss += session.run([next_hero_graph.cross_entropy, next_hero_graph.train_step], feed_dict={next_hero_graph.X: x, next_hero_graph.Y: y})[0]
+
+                # increasing batch size increases error -- perhaps we should adjust something in the optimization
+
+                print("epoch", i, "mean cross-entropy:", '{:.2f}'.format(sum(epochLoss) / (args.batches // EPOCHS) / args.batchSize))
+                saver.save(session, args.save)
+            
+            
+            print("building trials..")
+            trials = flatten([WinGraph.format(game) for game in train])
+            random.shuffle(trials) # since instances from the same game are together
+
+            print("training WinGraph..")
+            for i in range(EPOCHS):
+
+                epochLoss = 0.0
+
+                for _ in range(args.batches // EPOCHS):
+                    x, y = zip(*random.sample(trials, args.batchSize))
+                    epochLoss += session.run([win_graph.cross_entropy, win_graph.train_step], feed_dict={win_graph.X: x, win_graph.Y: y})[0]
 
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
 
@@ -211,11 +233,14 @@ if __name__ == "__main__":
 
         print("reading testing data..")
         test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
-        testInSession(test, session, graph)
+        testNextHeroInSession(test, session, next_hero_graph)
+
+        testWinInSession(test, session, win_graph)
 
 else:
 
-    graph = NextHeroGraph()
+    next_hero_graph = NextHeroGraph()
+    win_graph = WinGraph()
 
     # need sessionNames to preserve ordering of options
 sessions, sessionNames = loadSessions("pro-7.00", "pub-7.06-3809")
