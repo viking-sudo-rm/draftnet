@@ -105,7 +105,7 @@ def parseDraftnetArgs():
     argparser = argparse.ArgumentParser(description="Set train and test files.")
     argparser.add_argument('--train', help='path to train file', default='train/pro-7.00.json')
     argparser.add_argument('--test', help='path to test file', default='test/pro-7.00.json') # FIXME save arguments
-    argparser.add_argument('--save', help='path to save model', default="results/bag-{}-{}.ckpt".format(LEARNING_RATE, M))
+    argparser.add_argument('--save', help='path to save model', default="models/pick/bag-{}-{}.ckpt".format(LEARNING_RATE, M))
     argparser.add_argument('--model', help='path to model file', default=None)
     argparser.add_argument('--batches', help='number of total batches', type=int, default=1000000)
     argparser.add_argument('--batchSize', help='number of games per batch', type=int, default=100)
@@ -158,7 +158,7 @@ def loadSession(name):
     session = tf.Session()
     with session.as_default():
         saver = tf.train.Saver()
-        saver.restore(session, "results/" + name + ".ckpt")
+        saver.restore(session, "models/pick/" + name + ".ckpt")
         return session
 
 def loadSessions(*names):
