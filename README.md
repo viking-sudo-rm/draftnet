@@ -19,7 +19,7 @@ You can find an easy-to-use web interface for Draftnet at http://draftnet.heroku
 Our Python implementation of Draftnet requires the [Tensorflow](https://www.tensorflow.org/) machine learning library. After you have installed Tensorflow and cloned our repository, you can train the prediction network with `draftnet.py`. For example:
 
 ~~~~
-python draftnet.py --train train/pro-7.00.json --test test/pro-7.00.json --save models/pick/customModel.ckpt
+python draftnet.py --train train/pro-7.00.json --test test/pro-7.00.json --save models/pick/custom.ckpt
 ~~~~
 
 Train and test files contain game data fetched from the OpenDota API. Type `python draftnet.py --help` to view a full list of run options.
