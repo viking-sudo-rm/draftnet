@@ -5,7 +5,8 @@ from draftnet import *
 
 args = parseDraftnetArgs()
 
-with session.as_default():
+with tf.Session() as session:
+	
 	saver = tf.train.Saver()
 	saver.restore(session, args.model)
 
