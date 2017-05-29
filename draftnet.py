@@ -25,7 +25,7 @@ class DraftGraph(object):
 
         # define the matrices (weights)
 
-        self.W_1 = tf.Variable(tf.random_uniform([4*N+1, logitsHidden], -1.0, 1.0), name='W1')
+        self.W_1 = tf.Variable(tf.random_uniform([logitsX, logitsHidden], -1.0, 1.0), name='W1')
         self.b_1 = tf.Variable(tf.zeros([1, logitsHidden]), name='b1')
         self.W_2 = tf.Variable(tf.random_uniform([logitsHidden, logitsY], -1.0, 1.0), name='W2')
         self.b_2 = tf.Variable(tf.zeros([1, logitsY]), name='b2')
@@ -42,13 +42,16 @@ class DraftGraph(object):
         self.cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.y0, labels=self.Y, name='cross_entropy')
         self.train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(self.cross_entropy)
 
+    @staticmethod
+    def get(args):
+        return WinGraph() if args.w else NextHeroGraph()
+
 class NextHeroGraph(DraftGraph):
 
     def __init__(self):
         super(NextHeroGraph, self).__init__(logitsX=4*N+2, logitsY=N)
 
-    @staticmethod
-    def format(game):
+    def format(self, game):
         picks_bans = game['picks_bans']
         winning_team = 0 if game['radiant_win'] else 1
         output = []
@@ -79,8 +82,7 @@ class WinGraph(DraftGraph):
     def __init__(self):
         super(WinGraph, self).__init__(logitsX=2*N, logitsY=2)
 
-    @staticmethod
-    def format(game):
+    def format(self, game):
         picks_bans = game['picks_bans']
         result = [1 if game['radiant_win'] else 0, 0 if game['radiant_win'] else 1]
         teams = [Team(), Team()]
@@ -102,6 +104,7 @@ def parseDraftnetArgs():
     argparser.add_argument('--batches', help='number of total batches', type=int, default=1000000)
     argparser.add_argument('--batchSize', help='number of games per batch', type=int, default=100)
     argparser.add_argument('--layer', help='layer to use while rendering TSNE data', type=int, default=2)
+    argparser.add_argument('-w', help='use the win prediction graph instead of the next pick graph', action="store_true", default=False)
     # argparser.add_argument('--threshold', help='thresold for deciding pick set membership', default=0)
     return argparser.parse_args()
 
@@ -161,7 +164,7 @@ def testNextHeroInSession(test, session, graph, PICK_THRESHOLD=PICK_THRESHOLD):
     counts = [0.0] * 10
     neighborhood_sizes = [0.0] * 10
     for game in test:
-        x, y = zip(*NextHeroGraph.format(game))
+        x, y = zip(*graph.format(game))
         distributions = session.run(graph.Y_, feed_dict={graph.X: x, graph.Y: y})
         for i, distribution in enumerate(distributions):
             notAllowed = getNotAllowed(x[i])
@@ -178,10 +181,8 @@ def testWinInSession(test, session, graph):
 if __name__ == "__main__":
 
     args = parseDraftnetArgs()
-    next_hero_graph = NextHeroGraph()
-    win_graph = WinGraph()
-    # TODO: also train WinGraph
-    
+    graph = DraftGraph.get(args)
+
     with tf.Session() as session:
 
         session.run(tf.global_variables_initializer())
@@ -192,50 +193,29 @@ if __name__ == "__main__":
             print("reading training data..")
             train = [game for game in json.load(open(args.train, "r")) if game["picks_bans"] != None and len(game["picks_bans"]) == 20]
             print("building trials..")
-            trials = flatten([NextHeroGraph.format(game) for game in train])
+            trials = flatten([graph.format(game) for game in train])
             random.shuffle(trials) # since instances from the same game are together
 
-            print("training NextHeroGraph..")
+            print("training graph..")
             for i in range(EPOCHS):
 
                 epochLoss = 0.0
 
                 for _ in range(args.batches // EPOCHS):
                     x, y = zip(*random.sample(trials, args.batchSize))
-                    epochLoss += session.run([next_hero_graph.cross_entropy, next_hero_graph.train_step], feed_dict={next_hero_graph.X: x, next_hero_graph.Y: y})[0]
+                    epochLoss += session.run([graph.cross_entropy, graph.train_step], feed_dict={graph.X: x, graph.Y: y})[0]
 
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
 
                 print("epoch", i, "mean cross-entropy:", '{:.2f}'.format(sum(epochLoss) / (args.batches // EPOCHS) / args.batchSize))
-                saver.save(session, args.save)
-            
-            
-            print("building trials..")
-            trials = flatten([WinGraph.format(game) for game in train])
-            random.shuffle(trials) # since instances from the same game are together
-
-            print("training WinGraph..")
-            for i in range(EPOCHS):
-
-                epochLoss = 0.0
-
-                for _ in range(args.batches // EPOCHS):
-                    x, y = zip(*random.sample(trials, args.batchSize))
-                    epochLoss += session.run([win_graph.cross_entropy, win_graph.train_step], feed_dict={win_graph.X: x, win_graph.Y: y})[0]
-
-                # increasing batch size increases error -- perhaps we should adjust something in the optimization
-
-                print("epoch", i, "mean cross-entropy:", '{:.2f}'.format(sum(epochLoss) / (args.batches // EPOCHS) / args.batchSize))
-                saver.save(session, args.save)
+                saver.save(session, args.save)            
 
         else:
             saver.restore(session, args.model)
 
         print("reading testing data..")
         test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
-        testNextHeroInSession(test, session, next_hero_graph)
-
-        testWinInSession(test, session, win_graph)
+        testNextHeroInSession(test, session, graph)
 
 else:
 
