@@ -77,6 +77,22 @@ class NextHeroGraph(DraftGraph):
 
         return output
 
+    def testInSession(self, test, session, PICK_THRESHOLD=PICK_THRESHOLD):
+        print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
+        counts = [0.0] * 10
+        neighborhood_sizes = [0.0] * 10
+        for game in test:
+            x, y = zip(*self.format(game))
+            distributions = session.run(self.Y_, feed_dict={self.X: x, self.Y: y})
+            for i, distribution in enumerate(distributions):
+                notAllowed = getNotAllowed(x[i])
+                picks = getSuggestions(distribution, notAllowed, PICK_THRESHOLD=PICK_THRESHOLD)
+                neighborhood_sizes[i] += len(picks)
+                if np.argmax(y[i]) in picks:
+                    counts[i] += 1
+        print("accuracies:", [c / len(test) for c in counts])
+        print("neighborhood sizes:", [n / len(test) for n in neighborhood_sizes])
+
 class WinGraph(DraftGraph):
 
     def __init__(self):
@@ -93,6 +109,9 @@ class WinGraph(DraftGraph):
             teams[action['team']].pick(hero)
             output.append((teams[0].pickVector + teams[1].pickVector, result))
         return output
+
+    def testInSession(self, test, session):
+        pass
 
 # need this to avoid issues when importing something using argparser
 def parseDraftnetArgs():
@@ -159,25 +178,6 @@ def loadSession(name):
 def loadSessions(*names):
     return {name: loadSession(name) for name in names}, names
 
-def testNextHeroInSession(test, session, graph, PICK_THRESHOLD=PICK_THRESHOLD):
-    print("starting testing with PICK_THRESHOLD={}..".format(PICK_THRESHOLD))
-    counts = [0.0] * 10
-    neighborhood_sizes = [0.0] * 10
-    for game in test:
-        x, y = zip(*graph.format(game))
-        distributions = session.run(graph.Y_, feed_dict={graph.X: x, graph.Y: y})
-        for i, distribution in enumerate(distributions):
-            notAllowed = getNotAllowed(x[i])
-            picks = getSuggestions(distribution, notAllowed, PICK_THRESHOLD=PICK_THRESHOLD)
-            neighborhood_sizes[i] += len(picks)
-            if np.argmax(y[i]) in picks:
-                counts[i] += 1
-    print("accuracies:", [c / len(test) for c in counts])
-    print("neighborhood sizes:", [n / len(test) for n in neighborhood_sizes])
-
-def testWinInSession(test, session, graph):
-    pass
-
 if __name__ == "__main__":
 
     args = parseDraftnetArgs()
@@ -215,7 +215,7 @@ if __name__ == "__main__":
 
         print("reading testing data..")
         test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
-        testNextHeroInSession(test, session, graph)
+        graph.testInSession(test, session)
 
 else:
 
