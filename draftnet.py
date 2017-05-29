@@ -25,7 +25,7 @@ class DraftGraph(object):
 
         # define the matrices (weights)
 
-        self.W_1 = tf.Variable(tf.random_uniform([4*N+1, logitsHidden], -1.0, 1.0), name='W1')
+        self.W_1 = tf.Variable(tf.random_uniform([logitsX, logitsHidden], -1.0, 1.0), name='W1')
         self.b_1 = tf.Variable(tf.zeros([1, logitsHidden]), name='b1')
         self.W_2 = tf.Variable(tf.random_uniform([logitsHidden, logitsY], -1.0, 1.0), name='W2')
         self.b_2 = tf.Variable(tf.zeros([1, logitsY]), name='b2')
@@ -42,13 +42,16 @@ class DraftGraph(object):
         self.cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.y0, labels=self.Y, name='cross_entropy')
         self.train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(self.cross_entropy)
 
+    @staticmethod
+    def get(args):
+        return WinGraph() if args.w else NextHeroGraph()
+
 class NextHeroGraph(DraftGraph):
 
     def __init__(self):
         super(NextHeroGraph, self).__init__(logitsX=4*N+1, logitsY=N)
 
-    @staticmethod
-    def format(game):
+    def format(self, game):
         picks_bans = game['picks_bans']
         winning_team = 0 if game['radiant_win'] else 1
         first_pick = picks_bans[0]['team'] # gives a 0 or a 1
@@ -80,8 +83,7 @@ class WinGraph(DraftGraph):
     def __init__(self):
         super(WinGraph, self).__init__(logitsX=2*N, logitsY=1)
 
-    @staticmethod
-    def format(game):
+    def format(self, game):
         picks_bans = game['picks_bans']
         winning_team = 0 if game['radiant_win'] else 1
         team0, team1 = Team(), Team()
@@ -91,12 +93,12 @@ class WinGraph(DraftGraph):
             hero = APIHero.byID(getShiftedID(action['hero_id']))
             if winning_team == action['team']:
                 team0.pick(hero)
-                output.append((team0.pickVector + team1.pickVector, 1))
-                output.append((team1.pickVector + team0.pickVector, 0)) # is it useful to double up like this?
+                output.append((team0.pickVector + team1.pickVector, [1]))
+                output.append((team1.pickVector + team0.pickVector, [0])) # is it useful to double up like this?
             else:
                 team1.pick(hero)
-                output.append((team1.pickVector + team0.pickVector, 1))
-                output.append((team0.pickVector + team1.pickVector, 0))
+                output.append((team1.pickVector + team0.pickVector, [1]))
+                output.append((team0.pickVector + team1.pickVector, [0]))
 
         return output
 
@@ -110,6 +112,7 @@ def parseDraftnetArgs():
     argparser.add_argument('--batches', help='number of total batches', type=int, default=1000000)
     argparser.add_argument('--batchSize', help='number of games per batch', type=int, default=100)
     argparser.add_argument('--layer', help='layer to use while rendering TSNE data', type=int, default=2)
+    argparser.add_argument('-w', help='use the win prediction graph instead of the next pick graph', action="store_true", default=False)
     # argparser.add_argument('--threshold', help='thresold for deciding pick set membership', default=0)
     return argparser.parse_args()
 
@@ -169,7 +172,7 @@ def testInSession(test, session, graph, PICK_THRESHOLD=PICK_THRESHOLD):
     counts = [0.0] * 10
     neighborhood_sizes = [0.0] * 10
     for game in test:
-        x, y = zip(*NextHeroGraph.format(game))
+        x, y = zip(*graph.format(game))
         distributions = session.run(graph.Y_, feed_dict={graph.X: x, graph.Y: y})
         for i, distribution in enumerate(distributions):
             notAllowed = getNotAllowed(x[i])
@@ -184,7 +187,7 @@ def testInSession(test, session, graph, PICK_THRESHOLD=PICK_THRESHOLD):
 if __name__ == "__main__":
 
     args = parseDraftnetArgs()
-    graph = NextHeroGraph()
+    graph = DraftGraph.get(args)
 
     with tf.Session() as session:
 
@@ -196,7 +199,7 @@ if __name__ == "__main__":
             print("reading training data..")
             train = [game for game in json.load(open(args.train, "r")) if game["picks_bans"] != None and len(game["picks_bans"]) == 20]
             print("building trials..")
-            trials = flatten([NextHeroGraph.format(game) for game in train])
+            trials = flatten([graph.format(game) for game in train])
             random.shuffle(trials) # since instances from the same game are together
 
             print("starting training..")
