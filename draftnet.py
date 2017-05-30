@@ -7,8 +7,7 @@ from util import *
 M = 50 #TODO try changing M and see if it improves results?
 LEARNING_RATE = 0.01
 
-EPOCHS = 100
-PICK_THRESHOLD = 0.1 #0.35
+PICK_THRESHOLD = 0.15 #0.35
 
 # takes very close to 2^n iterations to reduce loss by one place with NUM_BATCHES = 1000000 and LEARNING_RATE = 0.0001
 
@@ -109,7 +108,7 @@ def parseDraftnetArgs():
     argparser.add_argument('--test', help='path to test file', default='test/pro-7.00.json') # FIXME save arguments
     argparser.add_argument('--save', help='path to save model', default="models/pick/bag-{}-{}.ckpt".format(LEARNING_RATE, M))
     argparser.add_argument('--model', help='path to model file', default=None)
-    argparser.add_argument('--batches', help='number of total batches', type=int, default=1000000)
+    argparser.add_argument('--epochs', help='number of epochs', type=int, default=100)
     argparser.add_argument('--batchSize', help='number of games per batch', type=int, default=100)
     argparser.add_argument('--layer', help='layer to use while rendering TSNE data', type=int, default=2)
     argparser.add_argument('-w', help='use the win prediction graph instead of the next pick graph', action="store_true", default=False)
@@ -203,17 +202,18 @@ if __name__ == "__main__":
             random.shuffle(trials) # since instances from the same game are together
 
             print("starting training..")
-            for i in range(EPOCHS):
+            for i in range(args.epochs):
 
+                random.shuffle(trials)
                 epochLoss = 0.0
 
-                for _ in range(args.batches // EPOCHS):
-                    x, y = zip(*random.sample(trials, args.batchSize))
+                for j in range(0, len(trials) - args.batchSize, args.batchSize):
+                    x, y = zip(*trials[j:j + args.batchSize])
                     epochLoss += session.run([graph.cross_entropy, graph.train_step], feed_dict={graph.X: x, graph.Y: y})[0]
 
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
 
-                print("epoch", i, "mean cross-entropy:", '{:.2f}'.format(sum(epochLoss) / (args.batches // EPOCHS) / args.batchSize))
+                print("epoch", i, "mean cross-entropy:", '{:.2f}'.format(sum(epochLoss) / len(trials)))
                 saver.save(session, args.save)
 
         else:
