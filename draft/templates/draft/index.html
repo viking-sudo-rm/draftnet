@@ -32,7 +32,7 @@
 	<div class="model-container hide-small">
 		<select id="model-select" ng-model="draftCtrl.selectedModel" ng-options="x for x in draftCtrl.models" ng-change="draftCtrl.predict()"></select>
 	</div>
-	<div class="text-center search-container"><input type="text" id="search" ng-model="draftCtrl.searchFilter" placeholder="Search heroes..." /></div>
+	<div class="text-center search-container"><input type="text" id="search" ng-model="draftCtrl.searchFilter" placeholder="Filter heroes..." /></div>
 	<div id="heroGrid">
 		<div class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'">
 			<div class="ban-line" ng-if="draftCtrl.isBanned(hero)"></div>
