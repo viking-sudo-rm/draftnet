@@ -39,8 +39,8 @@ class DraftGraph(object):
         # define loss function:
 
         # TODO can simplify this part since we know one distribution is one-hot
-        self.cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.y0, labels=self.Y, name='cross_entropy')
-        self.train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(self.cross_entropy)
+        self.cost = tf.nn.softmax_cross_entropy_with_logits(logits=self.y0, labels=self.Y, name='cost')
+        self.train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(self.cost)
 
     @staticmethod
     def get(args):
@@ -96,22 +96,30 @@ class NextHeroGraph(DraftGraph):
 class WinGraph(DraftGraph):
 
     def __init__(self):
-        super(WinGraph, self).__init__(logitsX=2*N, logitsY=2)
+        super(WinGraph, self).__init__(logitsX=2*N, logitsY=1)
+        self.cost = tf.reduce_mean(-tf.reduce_sum(self.Y * tf.log(self.y0), reduction_indices=[1]))
 
     def format(self, game):
         picks_bans = game['picks_bans']
-        result = [1 if game['radiant_win'] else 0, 0 if game['radiant_win'] else 1]
         teams = [Team(), Team()]
         output = []
         for action in picks_bans:
             if not action['is_pick']: continue
             hero = APIHero.byID(getShiftedID(action['hero_id']))
             teams[action['team']].pick(hero)
-            output.append((teams[0].pickVector + teams[1].pickVector, result))
+            output.append((teams[0].pickVector + teams[1].pickVector, [int(game['radiant_win'])]))
+            output.append((teams[1].pickVector + teams[0].pickVector, [int(not game['radiant_win'])]))
         return output
 
     def testInSession(self, test, session):
-        pass
+        counts = [0.0] * 20
+        for game in test:
+            x, y = zip(*self.format(game))
+            advantages = session.run(self.Y_, feed_dict={self.X: x, self.Y: y})
+            for i, advantage in enumerate(advantages):
+                if np.rint(advantage)[0] == y[i][0]:
+                    counts[i] += 1
+        print("accuracies:", [c / len(test) for c in counts])
 
 # need this to avoid issues when importing something using argparser
 def parseDraftnetArgs():
@@ -203,11 +211,11 @@ if __name__ == "__main__":
 
                 for _ in range(args.batches // EPOCHS):
                     x, y = zip(*random.sample(trials, args.batchSize))
-                    epochLoss += session.run([graph.cross_entropy, graph.train_step], feed_dict={graph.X: x, graph.Y: y})[0]
+                    epochLoss += session.run([graph.cost, graph.train_step], feed_dict={graph.X: x, graph.Y: y})[0]
 
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
 
-                print("epoch", i, "mean cross-entropy:", '{:.2f}'.format(sum(epochLoss) / (args.batches // EPOCHS) / args.batchSize))
+                print("epoch", i)
                 saver.save(session, args.save)            
 
         else:
@@ -223,4 +231,4 @@ else:
     win_graph = WinGraph()
 
     # need sessionNames to preserve ordering of options
-sessions, sessionNames = loadSessions("pro-7.00", "pub-7.06-3809")
+    sessions, sessionNames = loadSessions("pro-7.00", "pub-7.06-3809", "pro-7.00-win", "pub-7.06-3809-win")
