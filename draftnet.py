@@ -96,7 +96,7 @@ class WinGraph(DraftGraph):
 
     def __init__(self):
         super(WinGraph, self).__init__(logitsX=2*N, logitsY=1)
-        self.cost = tf.reduce_mean(-tf.reduce_sum(self.Y * tf.log(self.y0), reduction_indices=[1]))
+        self.cost = abs(Y - Y_)
 
     def format(self, game):
         picks_bans = game['picks_bans']
@@ -211,11 +211,11 @@ if __name__ == "__main__":
 
                 for j in range(0, len(trials) - args.batchSize, args.batchSize):
                     x, y = zip(*trials[j:j + args.batchSize])
-                    epochLoss += session.run([graph.cost, graph.train_step], feed_dict={graph.X: x, graph.Y: y})[0]
-
+                    c = session.run([graph.cost, graph.train_step], feed_dict={graph.X: x, graph.Y: y})[0]
+                    epochLoss += c / (len(trials) / args.batchSize)
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
 
-                print("epoch", i)
+                print("epoch", i, "cost=", "{:.9f}".format(epochLoss))
                 saver.save(session, args.save)
         else:
             saver.restore(session, args.model)
