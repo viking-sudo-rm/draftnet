@@ -43,12 +43,15 @@ def predict(request):
 
 	next_context = getContext(team0, team1, isPick, args["side"])
 	session = sessions[args["model"]]
-	distribution = getDistribution(context, session, graph)
-	suggestions = getSuggestions(distribution, getNotAllowed(context))
 
+	distribution = getDistribution(next_context, session, next_hero_graph)
+	suggestions = getSuggestions(distribution, getNotAllowed(next_context))
+
+	advantage = []
 	if isPick:
+		session_win = sessions[args["model"]+"-win"]
 		advantage_context = team0.pickVector + team1.pickVector
-		advantage = getDistribution(context, session, graph) # make graph WinGraph
+		advantage = getDistribution(advantage_context, session_win, win_graph) # make graph WinGraph
 
 	return JsonResponse({	"distribution": [float(d) for d in distribution],
 							"suggestions": suggestions,

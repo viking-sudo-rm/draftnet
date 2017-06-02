@@ -1,7 +1,7 @@
 from __future__ import print_function
 import tensorflow as tf
 import numpy as np
-import argparse, json, random
+import argparse, json, random, sys
 from util import *
 
 M = 50 #TODO try changing M and see if it improves results?
@@ -131,6 +131,7 @@ class WinGraph(DraftGraph):
 def parseDraftnetArgs():
     argparser = argparse.ArgumentParser(description="Set train and test files.")
     argparser.add_argument('--train', help='path to train file', default='train/pro-7.00.json')
+    argparser.add_argument('--dev', help='path to dev file', default='dev/pro-7.00.json')
     argparser.add_argument('--test', help='path to test file', default='test/pro-7.00.json') # FIXME save arguments
     argparser.add_argument('--save', help='path to save model', default="models/pick/bag-{}-{}.ckpt".format(LEARNING_RATE, M))
     argparser.add_argument('--model', help='path to model file', default=None)
@@ -138,7 +139,7 @@ def parseDraftnetArgs():
     argparser.add_argument('--batchSize', help='number of games per batch', type=int, default=100)
     argparser.add_argument('--layer', help='layer to use while rendering TSNE data', type=int, default=2)
     argparser.add_argument('-w', help='use the win prediction graph instead of the next pick graph', action="store_true", default=False)
-    # argparser.add_argument('--threshold', help='thresold for deciding pick set membership', default=0)
+    argparser.add_argument('--threshold', help='thresold for deciding pick set membership', type=float, default=0.15)
     return argparser.parse_args()
 
 flatten = lambda l: [item for sublist in l for item in sublist]
@@ -192,6 +193,9 @@ def loadSession(name):
 def loadSessions(*names):
     return {name: loadSession(name), name+"-win": loadSession(name+"-win") for name in names}, names
 
+def loadJSONGames(filename):
+    return [game for game in json.load(open(filename, "r")) if game["picks_bans"] != None and len(game["picks_bans"]) == 20]
+
 if __name__ == "__main__":
 
     args = parseDraftnetArgs()
@@ -205,12 +209,17 @@ if __name__ == "__main__":
         if not args.model:
 
             print("reading training data..")
-            train = [game for game in json.load(open(args.train, "r")) if game["picks_bans"] != None and len(game["picks_bans"]) == 20]
+            train = loadJSONGames(args.train)
+            if args.dev != None:
+                print("reading dev data..")
+                dev = loadJSONGames(args.dev)
+                devX, devY = zip(*flatten([graph.format(game) for game in dev]))
             print("building trials..")
             trials = flatten([graph.format(game) for game in train])
             random.shuffle(trials) # since instances from the same game are together
 
             print("starting training..")
+            devLoss = sys.maxint
             for i in range(args.epochs):
 
                 random.shuffle(trials)
@@ -225,21 +234,29 @@ if __name__ == "__main__":
                         epochLoss += c
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
                 if args.w:
-                    print("epoch", i, "cost =", "{:.4f}".format(epochLoss))
+                    print("epoch", i, "cost =", "{:.5f}".format(epochLoss))
                 else:
-                    print("epoch", i, "cost =", "{:.4f}".format(sum(epochLoss) / len(trials)))
+                    print("epoch", i, "mean cross-entropy:", "{:.5f}".format(sum(epochLoss) / len(trials)))
                 saver.save(session, args.save)
+
+                if args.dev == None: break
+
+                newDevLoss = sum(session.run(graph.cost, feed_dict={graph.X: devX, graph.Y: devY}))
+                if newDevLoss > devLoss: break
+                devLoss = newDevLoss
         else:
             saver.restore(session, args.model)
 
         print("reading testing data..")
-        test = [game for game in json.load(open(args.test, "r")) if len(game["picks_bans"]) == 20]
-        graph.testInSession(test, session)
-
+        test = loadJSONGames(args.test)
+        if args.w:
+            graph.testInSession(test, session)
+        else:
+            graph.testInSession(test, session, args.threshold)
 else:
 
     next_hero_graph = NextHeroGraph()
     win_graph = WinGraph()
 
     # need sessionNames to preserve ordering of options
-    sessions, sessionNames = loadSessions("pro-7.00", "pub-7.06-3809")
+    sessions, sessionNames = loadSessions("pro-7.00-4941", "pub-7.06-3809")

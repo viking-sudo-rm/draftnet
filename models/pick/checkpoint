@@ -1,2 +1,2 @@
-model_checkpoint_path: "pro-7.00-win.ckpt"
-all_model_checkpoint_paths: "pro-7.00-win.ckpt"
+model_checkpoint_path: "pro-7.00-4941.ckpt"
+all_model_checkpoint_paths: "pro-7.00-4941.ckpt"
