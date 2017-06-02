@@ -114,11 +114,18 @@ class WinGraph(DraftGraph):
 
     def testInSession(self, test, session):
         counts = [0.0] * 20
-        trials = flatten([self.format(game) for game in test])
-        x, y = zip(*trials)
-        correct_prediction = tf.equal(tf.argmax(self.Y_, 1), tf.argmax(self.Y, 1))
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-        print("Accuracy:", accuracy.eval({self.X: x, self.Y: y}))
+        for game in test:
+            x, y = zip(*self.format(game))
+            advantages = session.run(self.Y_, feed_dict={self.X: x, self.Y: y})
+            for i, advantage in enumerate(advantages):
+                if np.rint(advantage)[0] == y[i][0]:
+                    counts[i] += 1
+        print("accuracies:", [c / len(test) for c in counts])
+        # trials = flatten([self.format(game) for game in test])
+        # x, y = zip(*trials)
+        # correct_prediction = tf.equal(tf.argmax(self.Y_, 1), tf.argmax(self.Y, 1))
+        # accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        # print("Accuracy:", accuracy.eval({self.X: x, self.Y: y}))
 
 # need this to avoid issues when importing something using argparser
 def parseDraftnetArgs():
@@ -183,7 +190,7 @@ def loadSession(name):
         return session
 
 def loadSessions(*names):
-    return {name: loadSession(name) for name in names}, names
+    return {name: loadSession(name), name+"-win": loadSession(name+"-win") for name in names}, names
 
 if __name__ == "__main__":
 
@@ -218,9 +225,9 @@ if __name__ == "__main__":
                         epochLoss += c
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
                 if args.w:
-                    print("epoch", i, "cost=", "{:.4f}".format(epochLoss))
+                    print("epoch", i, "cost =", "{:.4f}".format(epochLoss))
                 else:
-                    print("epoch", i, "cost=", "{:.4f}".format(sum(epochLoss) / len(trials)))
+                    print("epoch", i, "cost =", "{:.4f}".format(sum(epochLoss) / len(trials)))
                 saver.save(session, args.save)
         else:
             saver.restore(session, args.model)
@@ -235,4 +242,4 @@ else:
     win_graph = WinGraph()
 
     # need sessionNames to preserve ordering of options
-    sessions, sessionNames = loadSessions("pro-7.00", "pub-7.06-3809", "pro-7.00-win", "pub-7.06-3809-win")
+    sessions, sessionNames = loadSessions("pro-7.00", "pub-7.06-3809")
