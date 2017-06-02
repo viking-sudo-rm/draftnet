@@ -37,9 +37,7 @@ class DraftGraph(object):
 
         # define loss function:
 
-        # TODO can simplify this part since we know one distribution is one-hot
-        self.cost = tf.nn.softmax_cross_entropy_with_logits(logits=self.y0, labels=self.Y, name='cost')
-        self.train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(self.cost)
+        
 
     @staticmethod
     def get(args):
@@ -49,6 +47,9 @@ class NextHeroGraph(DraftGraph):
 
     def __init__(self):
         super(NextHeroGraph, self).__init__(logitsX=4*N+2, logitsY=N)
+        # TODO can simplify this part since we know one distribution is one-hot
+        self.cost = tf.nn.softmax_cross_entropy_with_logits(logits=self.y0, labels=self.Y, name='cost')
+        self.train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(self.cost)
 
     def format(self, game):
         picks_bans = game['picks_bans']
@@ -95,8 +96,9 @@ class NextHeroGraph(DraftGraph):
 class WinGraph(DraftGraph):
 
     def __init__(self):
-        super(WinGraph, self).__init__(logitsX=2*N, logitsY=1)
-        self.cost = abs(Y - Y_)
+        super(WinGraph, self).__init__(logitsX=2*N, logitsY=2)
+        self.cost = tf.reduce_mean(-tf.reduce_sum(self.Y * tf.log(self.Y_), reduction_indices=1))
+        self.train_step = tf.train.GradientDescentOptimizer(LEARNING_RATE).minimize(self.cost)
 
     def format(self, game):
         picks_bans = game['picks_bans']
@@ -106,19 +108,17 @@ class WinGraph(DraftGraph):
             if not action['is_pick']: continue
             hero = APIHero.byID(getShiftedID(action['hero_id']))
             teams[action['team']].pick(hero)
-            output.append((teams[0].pickVector + teams[1].pickVector, [int(game['radiant_win'])]))
-            output.append((teams[1].pickVector + teams[0].pickVector, [int(not game['radiant_win'])]))
+            output.append((teams[0].pickVector + teams[1].pickVector, [int(game['radiant_win']), int(not game['radiant_win'])]))
+            output.append((teams[1].pickVector + teams[0].pickVector, [int(not game['radiant_win']), int(game['radiant_win'])]))
         return output
 
     def testInSession(self, test, session):
         counts = [0.0] * 20
-        for game in test:
-            x, y = zip(*self.format(game))
-            advantages = session.run(self.Y_, feed_dict={self.X: x, self.Y: y})
-            for i, advantage in enumerate(advantages):
-                if np.rint(advantage)[0] == y[i][0]:
-                    counts[i] += 1
-        print("accuracies:", [c / len(test) for c in counts])
+        trials = flatten([self.format(game) for game in test])
+        x, y = zip(*trials)
+        correct_prediction = tf.equal(tf.argmax(self.Y_, 1), tf.argmax(self.Y, 1))
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        print("Accuracy:", accuracy.eval({self.X: x, self.Y: y}))
 
 # need this to avoid issues when importing something using argparser
 def parseDraftnetArgs():
@@ -212,10 +212,15 @@ if __name__ == "__main__":
                 for j in range(0, len(trials) - args.batchSize, args.batchSize):
                     x, y = zip(*trials[j:j + args.batchSize])
                     c = session.run([graph.cost, graph.train_step], feed_dict={graph.X: x, graph.Y: y})[0]
-                    epochLoss += c / (len(trials) / args.batchSize)
+                    if args.w:
+                        epochLoss += c / (len(trials) / args.batchSize)
+                    else:
+                        epochLoss += c
                 # increasing batch size increases error -- perhaps we should adjust something in the optimization
-
-                print("epoch", i, "cost=", "{:.9f}".format(epochLoss))
+                if args.w:
+                    print("epoch", i, "cost=", "{:.4f}".format(epochLoss))
+                else:
+                    print("epoch", i, "cost=", "{:.4f}".format(sum(epochLoss) / len(trials)))
                 saver.save(session, args.save)
         else:
             saver.restore(session, args.model)
