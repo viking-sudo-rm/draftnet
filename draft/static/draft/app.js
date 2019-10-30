@@ -168,11 +168,19 @@
 		}
 
 		self.getPick = function(team, index){
-			return self.getHeroByID(self.teams[team].picks[index])
+			if (self.teams[team].picks.length > index)
+			{
+				return self.getHeroByID(self.teams[team].picks[index])
+			}
+			return null
 		}
 
 		self.getBan = function(team, index){
-			return self.getHeroByID(self.teams[team].bans[index])
+			if (self.teams[team].picks.length > index)
+			{
+				return self.getHeroByID(self.teams[team].bans[index])
+			}
+			return null	
 		}
 
 		self.loadHeroes = function() {
