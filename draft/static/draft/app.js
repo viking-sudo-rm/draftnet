@@ -98,7 +98,7 @@
 		self.selectHero = function(hero) {
 			if (self.selectedHero == hero) {
 				self.selectedHero = undefined
-			} else {
+			} else if (self.canBePicked(hero)) {
 				self.selectedHero = hero
 			}
 		}
@@ -119,6 +119,10 @@
 			return self.banned.indexOf(hero) != -1
 		}
 
+		self.canBePicked = function(hero) {
+			return !self.isPicked(hero) && !self.isBanned(hero)
+		}
+
 		self.choose = function() {
 			var pickBan = PICK_BAN_ORDER[self.pickCounter++]
 			if (pickBan.pick) {
@@ -129,6 +133,7 @@
 			self.teams[pickBan.team][pickBan.pick ? "picks" : "bans"].push(self.selectedHero.id)
 			self.predict(self.getNextAction().team)
 			self.searchFilter = ""
+			self.selectedHero = null
 		}
 
 		// pass the team you are predicting for

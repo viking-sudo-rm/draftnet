@@ -24,7 +24,7 @@
 <div id="topBar" class="bar row">
 		<div class="prediction col-md-8" ng-if="draftCtrl.prediction && !draftCtrl.draftIsDone()">
 			<h3 class="suggestion-text">[[ draftCtrl.getSuggestionText() ]]</h3>
-			<img class="suggestion" ng-repeat="hero in draftCtrl.prediction" ng-class="{'selected' : draftCtrl.isSelected(hero)}" ng-click="draftCtrl.selectHero(hero)" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ hero.name ]]_full.png" />
+			<img class="suggestion" ng-repeat="hero in draftCtrl.prediction" ng-class="{'selected' : draftCtrl.isSelected(hero), 'pickable': draftCtrl.canBePicked(hero)}" ng-click="draftCtrl.selectHero(hero)" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ hero.name ]]_full.png" />
 		</div>
 		<div class="turn-banner col-md-4 text-uppercase text-right" ng-if="!draftCtrl.draftIsDone()" ng-class="{'choosing' : draftCtrl.isChoosing(), 'reporting' : !draftCtrl.isChoosing()}">[[ draftCtrl.getTurnText() ]]</div>
 </div>
@@ -36,7 +36,7 @@
 	<div id="heroGrid">
 		<div class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'">
 			<div class="ban-line" ng-if="draftCtrl.isBanned(hero)"></div>
-			<img src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ hero.name ]]_full.png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'picked' : draftCtrl.isPicked(hero), 'banned' : draftCtrl.isBanned(hero)}" ng-click="draftCtrl.selectHero(hero)">
+			<img src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ hero.name ]]_full.png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'picked' : draftCtrl.isPicked(hero), 'banned' : draftCtrl.isBanned(hero), 'pickable': draftCtrl.canBePicked(hero)}" ng-click="draftCtrl.selectHero(hero)">
 		</div>
 	</div>
 	<div class="button-choose-container text-center">

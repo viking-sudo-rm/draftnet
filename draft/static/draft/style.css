@@ -50,6 +50,10 @@ body {
 	-webkit-filter: grayscale(100%);
 }
 
+.pickable {
+	cursor: pointer;
+}
+
 .selected {
 	border-color: #00d2ff;
 	box-shadow: 0 0 19px #00d2ff;
