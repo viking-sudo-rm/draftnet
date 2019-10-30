@@ -24,7 +24,7 @@
 <div id="topBar" class="bar row">
 		<div class="prediction col-md-8" ng-if="draftCtrl.prediction && !draftCtrl.draftIsDone()">
 			<h3 class="suggestion-text">[[ draftCtrl.getSuggestionText() ]]</h3>
-			<img class="suggestion" ng-repeat="hero in draftCtrl.prediction" ng-class="{'selected' : draftCtrl.isSelected(hero)}" ng-click="draftCtrl.selectHero(hero)" src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" />
+			<img class="suggestion" ng-repeat="hero in draftCtrl.prediction" ng-class="{'selected' : draftCtrl.isSelected(hero)}" ng-click="draftCtrl.selectHero(hero)" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ hero.name ]]_full.png" />
 		</div>
 		<div class="turn-banner col-md-4 text-uppercase text-right" ng-if="!draftCtrl.draftIsDone()" ng-class="{'choosing' : draftCtrl.isChoosing(), 'reporting' : !draftCtrl.isChoosing()}">[[ draftCtrl.getTurnText() ]]</div>
 </div>
@@ -36,7 +36,7 @@
 	<div id="heroGrid">
 		<div class="grid" ng-repeat="hero in draftCtrl.list | orderBy:'localized_name'">
 			<div class="ban-line" ng-if="draftCtrl.isBanned(hero)"></div>
-			<img src="{% static "draft/images/hero_icons/" %}[[ hero.name ]].png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'picked' : draftCtrl.isPicked(hero), 'banned' : draftCtrl.isBanned(hero)}" ng-click="draftCtrl.selectHero(hero)">
+			<img src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ hero.name ]]_full.png" ng-class="{'filtered' : draftCtrl.isFiltered(hero), 'selected' : draftCtrl.isSelected(hero), 'picked' : draftCtrl.isPicked(hero), 'banned' : draftCtrl.isBanned(hero)}" ng-click="draftCtrl.selectHero(hero)">
 		</div>
 	</div>
 	<div class="button-choose-container text-center">
@@ -50,35 +50,35 @@
 	<div class="text-center col-md-5 col-md-offset-1">
 		<h3 class="suggestion-text player text-uppercase" ng-class="{'turn' : draftCtrl.isChoosing() }">Team A</h3>
 		<div class="row">
-			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,0)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(0,0).name ]].png" ></div>
-			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,1)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(0,1).name ]].png" ></div>
-			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,2)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(0,2).name ]].png" ></div>
-			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,3)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(0,3).name ]].png" ></div>
-			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,4)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(0,4).name ]].png" ></div>
+			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,0)" class="selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getPick(0,0).name ]]_full.png" ></div>
+			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,1)" class="selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getPick(0,1).name ]]_full.png" ></div>
+			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,2)" class="selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getPick(0,2).name ]]_full.png" ></div>
+			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,3)" class="selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getPick(0,3).name ]]_full.png" ></div>
+			<div class="pick-slot"><img ng-if="draftCtrl.getPick(0,4)" class="selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getPick(0,4).name ]]_full.png" ></div>
 		</div>
 		<div class="row">
-			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(0,0)"></div><img ng-if="draftCtrl.getBan(0,0)" class="banned selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getBan(0,0).name ]].png" ></div>
-			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(0,1)"></div><img ng-if="draftCtrl.getBan(0,1)" class="banned selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getBan(0,1).name ]].png" ></div>
-			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(0,2)"></div><img ng-if="draftCtrl.getBan(0,2)" class="banned selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getBan(0,2).name ]].png" ></div>
-			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(0,3)"></div><img ng-if="draftCtrl.getBan(0,3)" class="banned selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getBan(0,3).name ]].png" ></div>
-			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(0,4)"></div><img ng-if="draftCtrl.getBan(0,4)" class="banned selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getBan(0,4).name ]].png" ></div>
+			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(0,0)"></div><img ng-if="draftCtrl.getBan(0,0)" class="banned selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getBan(0,0).name ]]_full.png" ></div>
+			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(0,1)"></div><img ng-if="draftCtrl.getBan(0,1)" class="banned selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getBan(0,1).name ]]_full.png" ></div>
+			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(0,2)"></div><img ng-if="draftCtrl.getBan(0,2)" class="banned selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getBan(0,2).name ]]_full.png" ></div>
+			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(0,3)"></div><img ng-if="draftCtrl.getBan(0,3)" class="banned selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getBan(0,3).name ]]_full.png" ></div>
+			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(0,4)"></div><img ng-if="draftCtrl.getBan(0,4)" class="banned selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getBan(0,4).name ]]_full.png" ></div>
 		</div>
 	</div>
 	<div class="text-center col-md-5">
 		<h3 class="suggestion-text enemy text-uppercase" ng-class="{'turn' : !draftCtrl.isChoosing() }">Team B</h3>
 		<div class="row">
-			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,0)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(1,0).name ]].png" ></div>
-			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,1)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(1,1).name ]].png" ></div>
-			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,2)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(1,2).name ]].png" ></div>
-			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,3)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(1,3).name ]].png" ></div>
-			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,4)" class="selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getPick(1,4).name ]].png" ></div>
+			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,0)" class="selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getPick(1,0).name ]]_full.png" ></div>
+			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,1)" class="selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getPick(1,1).name ]]_full.png" ></div>
+			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,2)" class="selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getPick(1,2).name ]]_full.png" ></div>
+			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,3)" class="selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getPick(1,3).name ]]_full.png" ></div>
+			<div class="pick-slot"><img ng-if="draftCtrl.getPick(1,4)" class="selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getPick(1,4).name ]]_full.png" ></div>
 		</div>
 		<div class="row">
-			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(1,0)"></div><img ng-if="draftCtrl.getBan(0,0)" class="banned selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getBan(1,0).name ]].png" ></div>
-			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(1,1)"></div><img ng-if="draftCtrl.getBan(1,1)" class="banned selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getBan(1,1).name ]].png" ></div>
-			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(1,2)"></div><img ng-if="draftCtrl.getBan(1,2)" class="banned selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getBan(1,2).name ]].png" ></div>
-			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(1,3)"></div><img ng-if="draftCtrl.getBan(1,3)" class="banned selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getBan(1,3).name ]].png" ></div>
-			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(1,4)"></div><img ng-if="draftCtrl.getBan(1,4)" class="banned selection" src="{% static "draft/images/hero_icons/" %}[[ draftCtrl.getBan(1,4).name ]].png" ></div>
+			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(1,0)"></div><img ng-if="draftCtrl.getBan(0,0)" class="banned selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getBan(1,0).name ]]_full.png" ></div>
+			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(1,1)"></div><img ng-if="draftCtrl.getBan(1,1)" class="banned selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getBan(1,1).name ]]_full.png" ></div>
+			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(1,2)"></div><img ng-if="draftCtrl.getBan(1,2)" class="banned selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getBan(1,2).name ]]_full.png" ></div>
+			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(1,3)"></div><img ng-if="draftCtrl.getBan(1,3)" class="banned selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getBan(1,3).name ]]_full.png" ></div>
+			<div class="ban-slot"><div class="ban-line" ng-if="draftCtrl.getBan(1,4)"></div><img ng-if="draftCtrl.getBan(1,4)" class="banned selection" src="http://cdn.dota2.com/apps/dota2/images/heroes/[[ draftCtrl.getBan(1,4).name ]]_full.png" ></div>
 		</div>
 	</div>
 </div>
