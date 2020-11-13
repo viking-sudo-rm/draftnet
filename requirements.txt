@@ -33,7 +33,7 @@ scipy==0.13.1
 six==1.10.0
 sklearn==0.0
 smart-open==1.4.0
-tensorflow==1.15.2
+tensorflow==2.3.1
 urllib3==1.24.2
 virtualenv==15.1.0
 Werkzeug==0.15.3
