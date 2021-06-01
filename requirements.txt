@@ -34,7 +34,7 @@ six==1.10.0
 sklearn==0.0
 smart-open==1.4.0
 tensorflow==1.15.2
-urllib3==1.24.2
+urllib3==1.26.5
 virtualenv==15.1.0
 Werkzeug==0.15.3
 xattr==0.6.4
